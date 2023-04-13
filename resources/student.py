@@ -24,7 +24,7 @@ class StudentList(MethodView):
             db.session.add(student)
             db.session.commit()
         except IntegrityError as e:
-            abort(400, message=f"an internal error occured please inspect: {e}")
+            abort(400, message=f"an integrity error occured please inspect: {e}")
 
         except SQLAlchemyError as e:
             abort(500, message=f"an error occured when adding student to db: {e}")

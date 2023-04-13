@@ -1,5 +1,4 @@
 from db import db
-from sqlalchemy import ARRAY
 
 
 class CourseRegisterModel(db.Model):
