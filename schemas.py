@@ -15,6 +15,8 @@ class PlainStudentSchema(Schema):
     age = fields.Int(required=True)
     summary = fields.Str(required=False, default="no summary provided")
     profile_picture = fields.Raw(type="file", required=False)
+    username = fields.Str(required=True)
+    password = fields.Str(required=True, load_only=True)
 
 class PlainTutorSchema(Schema):
     id = fields.Int(dump_only=True)
@@ -23,6 +25,8 @@ class PlainTutorSchema(Schema):
     age = fields.Int(required=True)
     summary = fields.Str(required=False, default="no summary provided")
     profile_picture = fields.Raw(type="file", required=False)
+    username = fields.Str(required=True)
+    password = fields.Str(required=True, load_only=True)
 
 class PlainCourseRegisterSchema(Schema):
     id = fields.Int(dump_only=True)
@@ -84,7 +88,9 @@ class CourseUpdateSchema(Schema):
     summary = fields.Str()
 
 
-
+class LoginSchema(Schema):
+    username = fields.Str(required=True)
+    password = fields.Str(required=True)
 
 
 class CourseRegisterUpdateSchema(Schema):

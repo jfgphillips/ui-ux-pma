@@ -35,7 +35,7 @@ class CourseList(MethodView):
         return course, 201
 
 
-@blp.route("/courses/<string:course_id>")
+@blp.route("/courses/<int:course_id>")
 class Course(MethodView):
     @blp.response(200, CourseSchema)
     def get(self, course_id):

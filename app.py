@@ -1,11 +1,12 @@
 import os
+import secrets
 
 from flask import Flask
 from flask_smorest import Api
 
 from db import db
 from resources import CourseRegisterBlueprint, CourseBlueprint, StudentBlueprint, TutorBlueprint
-
+from flask_jwt_extended import JWTManager
 
 def create_app(db_url=None):
     app = Flask(__name__)
@@ -22,6 +23,9 @@ def create_app(db_url=None):
     db.init_app(app)
 
     api = Api(app)
+
+    app.config["JWT_SECRET_KEY"] = "252632243100135549017503244930124336218"
+    jwt = JWTManager(app)
 
     with app.app_context():
         db.create_all()

@@ -9,7 +9,7 @@ from schemas import CourseRegisterSchema, CourseRegisterAndStudentSchema, Course
 
 blp = Blueprint("CourseRegisters", "course_registers", description="Operations on course registers")
 
-@blp.route("/courses/<string:course_id>/course_registers")
+@blp.route("/courses/<int:course_id>/course_registers")
 class RegistersInCourse(MethodView):
     @blp.response(200, CourseRegisterSchema(many=True))
     def get(self, course_id):
@@ -54,7 +54,7 @@ class CourseRegisterList(MethodView):
         return course_register
 
 
-@blp.route("/students/<string:student_id>/course_registers/<string:course_register_id>")
+@blp.route("/students/<int:student_id>/course_registers/<int:course_register_id>")
 class LinkCourseRegistersToStudents(MethodView):
     @blp.response(201, CourseRegisterSchema)
     def post(self, student_id, course_register_id):
@@ -88,7 +88,7 @@ class LinkCourseRegistersToStudents(MethodView):
 
         return {"message": "student removed from course", "student": student, "course_register": course_register}
 
-@blp.route("/tutors/<string:tutor_id>/course_registers/<string:course_register_id>")
+@blp.route("/tutors/<int:tutor_id>/course_registers/<int:course_register_id>")
 class LinkCourseRegistersToTutors(MethodView):
     @blp.response(201, CourseRegisterSchema)
     def post(self, tutor_id, course_register_id):
@@ -123,7 +123,7 @@ class LinkCourseRegistersToTutors(MethodView):
         return {"message": "tutor removed from course", "tutor": tutor, "course_register": course_register}
 
 
-@blp.route("/course_registers/<string:course_register_id>")
+@blp.route("/course_registers/<int:course_register_id>")
 class CourseRegister(MethodView):
     @blp.response(200, CourseRegisterSchema)
     def get(self, course_register_id):
