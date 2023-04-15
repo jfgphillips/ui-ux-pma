@@ -52,11 +52,13 @@ class Tutor(MethodView):
         if tutor:
             for key, value in tutor_data.items():
                 setattr(tutor, key, value)
+            status_code = 200
 
         else:
             tutor = TutorModel(id=tutor_id, **tutor_data)
+            status_code = 201
 
         db.session.add(tutor)
         db.session.commit()
 
-        return tutor
+        return tutor, status_code

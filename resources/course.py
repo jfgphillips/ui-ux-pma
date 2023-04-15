@@ -49,17 +49,19 @@ class Course(MethodView):
         return {"message": "course deleted"}
 
     @blp.arguments(CourseUpdateSchema)
-    @blp.response(204, CourseSchema)
+    @blp.response(200, CourseSchema)
     def put(self, course_data, course_id):
         course = CourseModel.query.get(course_id)
         if course:
             for key, value in course_data.items():
                 setattr(course, key, value)
+            status_code = 200
 
         else:
             course = CourseModel(id=course_id, **course_data)
+            status_code = 201
 
         db.session.add(course)
         db.session.commit()
 
-        return course
+        return course, status_code

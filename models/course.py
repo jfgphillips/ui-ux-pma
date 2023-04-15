@@ -11,4 +11,5 @@ class CourseModel(db.Model):
     tutors = db.Column(db.Integer)
     summary = db.Column(db.String)
 
-    registrations = db.relationship("CourseRegisterModel", back_populates="course")
+    registers = db.relationship("CourseRegisterModel", back_populates="course", lazy="dynamic")
+    #students = db.relationship("StudentModel", back_populates="courses", secondary="CourseRegisters")

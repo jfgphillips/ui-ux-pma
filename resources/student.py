@@ -52,11 +52,13 @@ class Student(MethodView):
         if student:
             for key, value in student_data.items():
                 setattr(student, key, value)
+            status_code = 200
 
         else:
             student = StudentModel(id=student_id, **student_data)
+            status_code = 201
 
         db.session.add(student)
         db.session.commit()
 
-        return student
+        return student, status_code

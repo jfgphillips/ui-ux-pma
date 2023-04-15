@@ -9,3 +9,6 @@ class TutorModel(db.Model):
     email = db.Column(db.String, unique=True, nullable=False)
     age = db.Column(db.Integer, nullable=False)
     summary = db.Column(db.String)
+    profile_picture = db.Column(db.String)
+
+    registers = db.relationship("CourseRegisterModel", back_populates="tutors", secondary="TutorRegister")
