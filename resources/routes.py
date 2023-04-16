@@ -15,15 +15,15 @@ blp = Blueprint("Routes", __name__, description="html operations")
 
 logger = logging.getLogger(__name__)
 
+
 @blp.route("/login")
 def login():
-    print("start")
     jwt = verify_jwt_in_request(optional=True)
-    print(jwt)
     if jwt:
         return homepage()
 
     return render_template("login_form.html")
+
 
 @blp.route("/logout")
 @jwt_required(locations=["cookies"])
@@ -45,7 +45,9 @@ def handle_login():
         response = requests.post(f"{request.url_root}{url_for('Auth.StudentLogin')}", data=payload)
 
     if response.status_code == 200:
-        authed_response = TokenManager.generate_response(response.json()["access_token"], response.json()["refresh_token"])
+        authed_response = TokenManager.generate_response(
+            response.json()["access_token"], response.json()["refresh_token"]
+        )
         return authed_response
 
     return redirect(url_for("Routes.login"))
@@ -64,6 +66,7 @@ def homepage(user=None):
             user = Student.get(id).json
 
     return render_template("homepage.html", user=user)
+
 
 @blp.route("/user_info")
 def user_info():
@@ -93,7 +96,7 @@ def _convert_form_to_json_payload(form: dict, exclude: list = None):
     return as_dict
 
 
-@blp.post("/user/update")
+@blp.post("/handle_update")
 @jwt_required(locations=["cookies"])
 def user_update():
     user_payload = get_jwt()
@@ -111,7 +114,6 @@ def user_update():
     return redirect(url_for("Routes.user_info"))
 
 
-
 @blp.route("/signup")
 def signup():
     jwt = verify_jwt_in_request(optional=True)
@@ -119,6 +121,7 @@ def signup():
         return homepage()
 
     return render_template("register_form.html")
+
 
 @blp.post("/handle_signup")
 def handle_signup():
@@ -134,4 +137,3 @@ def handle_signup():
         return redirect(url_for("Routes.login"))
 
     return render_template("register_form.html")
-

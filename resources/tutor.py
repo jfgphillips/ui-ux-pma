@@ -43,7 +43,6 @@ class TutorList(MethodView):
 
 @blp.route("/tutors/<int:tutor_id>")
 class Tutor(MethodView):
-
     @staticmethod
     @blp.response(200, TutorSchema)
     def get(tutor_id):

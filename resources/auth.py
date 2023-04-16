@@ -4,8 +4,17 @@ import requests
 
 from flask import render_template, request, url_for, redirect, flash, make_response
 from flask.views import MethodView
-from flask_jwt_extended import create_access_token, get_jwt, jwt_required, create_refresh_token, get_jwt_identity, \
-    verify_jwt_in_request, set_access_cookies, set_refresh_cookies, unset_jwt_cookies
+from flask_jwt_extended import (
+    create_access_token,
+    get_jwt,
+    jwt_required,
+    create_refresh_token,
+    get_jwt_identity,
+    verify_jwt_in_request,
+    set_access_cookies,
+    set_refresh_cookies,
+    unset_jwt_cookies,
+)
 from flask_smorest import Blueprint, abort
 from passlib.handlers.pbkdf2 import pbkdf2_sha256
 
@@ -51,6 +60,7 @@ class TokenManager:
         unset_jwt_cookies(response)
         return response
 
+
 @blp.route("/students/login")
 class StudentLogin(MethodView):
     @blp.arguments(LoginSchema, location="form", content_type="form")
@@ -78,7 +88,7 @@ class TutorLogin(MethodView):
 
 @blp.route("/admin/login")
 class AdminLogin(MethodView):
-    @blp.arguments(LoginSchema, location="form", content_type="form")
+    @blp.arguments(LoginSchema)
     def post(self, login_data):
         if login_data["username"] == "admin" and login_data["password"] == "password":
             token_manager = TokenManager.get_tokens(uid=0, user_type="admin", is_fresh=True)
@@ -100,17 +110,9 @@ class TokenRefresh(MethodView):
 
 
 @blp.route("/user_logout")
-@jwt_required(locations=["cookies"])
 class Logout(MethodView):
+    @jwt_required(locations=["cookies"])
     def post(self):
         jti = get_jwt()["jti"]
         BLOCKLIST.add(jti)
         return {"message": "Successfully logged out"}, 200
-
-
-
-
-
-
-
-
