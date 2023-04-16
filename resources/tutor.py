@@ -17,9 +17,11 @@ class TutorList(MethodView):
     def get(self):
         return TutorModel.query.all()
 
-    @blp.arguments(TutorSchema)
+    @staticmethod
+    @blp.arguments(TutorSchema, location="form", content_type="form")
     @blp.response(201, TutorSchema)
-    def post(self, tutor_data):
+    def post(tutor_data):
+        print(tutor_data)
         if TutorModel.query.filter(TutorModel.username == tutor_data["username"]).first():
             abort(409, message="a student with that username already exists")
 
@@ -41,8 +43,10 @@ class TutorList(MethodView):
 
 @blp.route("/tutors/<int:tutor_id>")
 class Tutor(MethodView):
+
+    @staticmethod
     @blp.response(200, TutorSchema)
-    def get(self, tutor_id):
+    def get(tutor_id):
         tutor = TutorModel.query.get_or_404(tutor_id)
         return tutor
 

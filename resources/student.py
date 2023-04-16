@@ -17,7 +17,7 @@ class StudentList(MethodView):
     def get(self):
         return StudentModel.query.all()
 
-    @blp.arguments(StudentSchema)
+    @blp.arguments(StudentSchema, location="form", content_type="form")
     @blp.response(201, StudentSchema)
     def post(self, student_data):
         if StudentModel.query.filter(StudentModel.username == student_data["username"]).first():
@@ -72,5 +72,4 @@ class Student(MethodView):
 
         db.session.add(student)
         db.session.commit()
-
         return student, status_code

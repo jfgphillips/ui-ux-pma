@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block content %}
+    <section class="container">
+        <div class="card">
+        <form method="POST" action="{{url_for('Routes.user_update')}}">
+        <div class="card-header">
+            {% if user_type == "tutor" %}
+            Edit Tutor
+            {% else %}
+            Edit Student
+            {% endif %}
+        </div>
+
+        <div class="card-body">
+            {%  for key, value in user.items()  %}
+                <div class="form-group">
+                {% if key == "registers" %}
+                    <label for="{{ key }}">{{ key }}</label>
+                    {% for register in registers %}
+                                <div class="register-header">
+                                course {{ register.name }}
+                                </div>
+                    {% endfor %}
+                {% elif key == "id" or key == "username" %}
+                    <label for="metadata">user metadata</label>
+                    <div class="register-header">
+                                {{ key }}: {{ value }}
+                    </div>
+                {% elif key == "summary" %}
+                    <label for="{{ key }}">{{ key }}</label>
+                    <textarea class="form-control" id="{{ key }}" name="{{ key }}" rows="10">{{ value }}</textarea>
+                {% else %}
+                    <label for="{{ key }}">{{ key }}</label>
+                <input type="text" class="form-control" id="{{ key }}" name="{{ key }}" value="{{ value }}">
+                {% endif %}
+
+                </div>
+            {%  endfor %}
+        </div>
+        <div class="card-footer">
+            <a class="btn btn-sm, btn-secondary float-left" href="{{url_for('Routes.homepage', user=user)}}">Cancel</a>
+            <input class="btn btn-sm, btn-secondary float-right" type="submit" id="submit" value="Save">
+        </div>
+    </form>
+    </div>
+
+
+
+    </section>
+{% endblock content %}

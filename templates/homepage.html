@@ -8,11 +8,16 @@
                 <div class="btn-group float-right">
                     <a class="btn btn-danger" href="{{ url_for('Routes.logout') }}" role="button">logout</a>
                 </div>
+                <div class="btn-group float-right">
+                    <a class="btn btn-primary" href="{{ url_for('Routes.user_info') }}" role="button">Info</a>
+                </div>
                 {% else %}
                 <div class="btn-group float-right">
                     <a class="btn btn-info" href="{{ url_for('Routes.login') }}" role="button">login</a>
                 </div>
-
+                <div class="btn-group float-right">
+                    <a class="btn btn-primary" href="{{ url_for('Routes.signup') }}" role="button">signup</a>
+                </div>
             {% endif %}
 {#            <div class="btn-group float-right">#}
 {#                <button type="button" class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">#}
