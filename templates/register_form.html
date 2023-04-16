@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
- <div class="tabs">
+<div class="tabs">
     <div role="tablist">
       <button id="tab-1" aria-selected="true" aria-controls="tab-panel-1" role="tab" type="button" tabindex="0">
         Student
@@ -10,111 +10,153 @@
       </button>
     </div>
     <div id="tab-panel-1" aria-labelledby="tab-1" role="tabpanel" tabindex="0">
-    <form action="/handle_signup" method="POST" name="form">
-    <div class="signup">
-    <div class="signup-screen">
-    <div class="app-title">
-    <h1>Student Signup</h1>
+
+        <div class="card">
+        <form action="/handle_signup" method="POST" name="form">
+        <div class="card-header">
+            Student Signup
+        </div>
+
+
+        <div class="card-body">
+
+        <div class="form-group">
+
+            <label for="title">Username</label>
+            <input type="text" class="form-control" value="" placeholder="username" name="username">
+            <label class="login-field-icon fui-user" for="login-name"></label>
+
+        </div>
+
+        <div class="form-group">
+
+            <label for="title">Password</label>
+            <input type="password" class="form-control" value="" placeholder="password" name="password">
+            <label class="login-field-icon fui-lock" for="login-pass"></label>
+
+        </div>
+
+        <div class="form-group">
+
+            <label for="title">Email</label>
+            <input type="email" class="form-control" value="" placeholder="example@gmail.com" name="email">
+            <label class="login-field-icon fui-lock" for="login-email"></label>
+
+        </div>
+
+        <div class="form-group">
+
+            <label for="title">Name</label>
+            <input type="text" class="form-control" value="" placeholder="Jon Doe" name="name">
+            <label class="login-field-icon fui-lock" for="login-name"></label>
+
+        </div>
+
+        <div class="form-group">
+
+            <label for="title">age</label>
+            <input type="number" class="form-control" value="" placeholder="10" name="age">
+            <label class="login-field-icon fui-lock" for="login-age"></label>
+
+        </div>
+
+        <div class="form-group">
+
+            <label for="title">Summary</label>
+            <textarea class="form-control" placeholder="Summary" name="summary"></textarea>
+            <label class="login-field-icon fui-lock" for="login-age"></label>
+
+        </div>
+
+            <input type="hidden" name="user_type" id="user_type" value="student" />
+
+        </div>
+
+    <div class="card-footer">
+        <input type="submit" value="Sign Up" class="btn btn-sm btn-primary float-right">
+        <a class="btn btn-sm btn-secondary float-left" href="{{url_for('Routes.homepage', user=user)}}">Cancel</a>
+        <a class="btn btn-sm btn-secondary float-right" href="{{url_for('Routes.login')}}">login</a>
     </div>
-    <div class="signup-form">
-    <div class="control-group">
-        <label for="title">Username</label>
-        <label>
-            <input type="text" class="login-field" value="" placeholder="username" name="username">
-        </label>
-        <label class="login-field-icon fui-user" for="login-name"></label></div>
-    <div class="control-group">
-        <label for="title">Password</label>
-        <label>
-            <input type="password" class="login-field" value="" placeholder="password" name="password">
-        </label>
-        <label class="login-field-icon fui-lock" for="login-pass"></label></div>
-    <div class="control-group">
-        <label for="title">Email</label>
-        <label>
-            <input type="email" class="login-field" value="" placeholder="example@gmail.com" name="email">
-        </label>
-        <label class="login-field-icon fui-lock" for="login-email"></label></div>
-    <div class="control-group">
-        <label for="title">Name</label>
-        <label>
-            <input type="text" class="login-field" value="" placeholder="Jon Doe" name="name">
-        </label>
-        <label class="login-field-icon fui-lock" for="login-name"></label></div>
-    <div class="control-group">
-        <label for="title">age</label>
-        <label>
-            <input type="number" class="login-field" value="" placeholder="10" name="age">
-        </label>
-        <label class="login-field-icon fui-lock" for="login-age"></label></div>
-    <div class="control-group">
-        <label for="title">Summary</label>
-        <label>
-            <textarea class="login-field" placeholder="Summary" name="summary"></textarea>
-        </label>
-        <label class="login-field-icon fui-lock" for="login-age"></label></div>
-    <input type="hidden" name="user_type" id="user_type" value="student" />
-        <input type="submit" value="Sign up" class="btn btn-primary btn-large btn-block">
+
+    </form>
 
     </div>
     </div>
-    </div>
-    </form>
-    </div>
+
+
     <div id="tab-panel-2" aria-labelledby="tab-2" role="tabpanel" tabindex="-1" hidden>
-      <form action="/handle_signup" method="POST">
-    <div class="signup">
-    <div class="signup-screen">
-    <div class="app-title">
-    <h1>Tutor Signup</h1>
+     <div class="card">
+        <form action="/handle_signup" method="POST" name="form">
+        <div class="card-header">
+            Tutor Signup
+        </div>
+
+
+        <div class="card-body">
+
+        <div class="form-group">
+
+            <label for="title">Username</label>
+            <input type="text" class="form-control" value="" placeholder="username" name="username">
+            <label class="login-field-icon fui-user" for="login-name"></label>
+
+        </div>
+
+        <div class="form-group">
+
+            <label for="title">Password</label>
+            <input type="password" class="form-control" value="" placeholder="password" name="password">
+            <label class="login-field-icon fui-lock" for="login-pass"></label>
+
+        </div>
+
+        <div class="form-group">
+
+            <label for="title">Email</label>
+            <input type="email" class="form-control" value="" placeholder="example@gmail.com" name="email">
+            <label class="login-field-icon fui-lock" for="login-email"></label>
+
+        </div>
+
+        <div class="form-group">
+
+            <label for="title">Name</label>
+            <input type="text" class="form-control" value="" placeholder="Jon Doe" name="name">
+            <label class="login-field-icon fui-lock" for="login-name"></label>
+
+        </div>
+
+        <div class="form-group">
+
+            <label for="title">age</label>
+            <input type="number" class="form-control" value="" placeholder="10" name="age">
+            <label class="login-field-icon fui-lock" for="login-age"></label>
+
+        </div>
+
+        <div class="form-group">
+
+            <label for="title">Summary</label>
+            <textarea class="form-control" placeholder="Summary" name="summary"></textarea>
+            <label class="login-field-icon fui-lock" for="login-age"></label>
+
+        </div>
+
+            <input type="hidden" name="user_type" id="user_type" value="tutor" />
+
+        </div>
+
+    <div class="card-footer">
+        <input type="submit" value="Sign Up" class="btn btn-sm btn-primary float-right">
+        <a class="btn btn-sm btn-secondary float-left" href="{{url_for('Routes.homepage', user=user)}}">Cancel</a>
+        <a class="btn btn-sm btn-secondary float-right" href="{{url_for('Routes.login')}}">login</a>
     </div>
-    <div class="signup-form">
-        <div class="control-group">
-        <label for="title">Username</label>
-        <label>
-            <input type="text" class="login-field" value="" placeholder="username" name="username">
-        </label>
-        <label class="login-field-icon fui-user" for="login-name"></label></div>
-    <div class="control-group">
-        <label for="title">Password</label>
-        <label>
-            <input type="password" class="login-field" value="" placeholder="password" name="password">
-        </label>
-        <label class="login-field-icon fui-lock" for="login-pass"></label></div>
-    <div class="control-group">
-        <label for="title">Email</label>
-        <label>
-            <input type="email" class="login-field" value="" placeholder="example@gmail.com" name="email">
-        </label>
-        <label class="login-field-icon fui-lock" for="login-email"></label></div>
-    <div class="control-group">
-        <label for="title">Name</label>
-        <label>
-            <input type="text" class="login-field" value="" placeholder="Jon Doe" name="name">
-        </label>
-        <label class="login-field-icon fui-lock" for="login-name"></label></div>
-    <div class="control-group">
-        <label for="title">age</label>
-        <label>
-            <input type="text" class="login-field" value="" step="1" placeholder="10" name="age">
-        </label>
-        <label class="login-field-icon fui-lock" for="login-age"></label></div>
-    <div class="control-group">
-        <label for="title">Summary</label>
-        <label>
-            <textarea class="login-field" placeholder="Summary" name="summary"></textarea>
-        </label>
-        <label class="login-field-icon fui-lock" for="login-age"></label></div>
-    <input type="hidden" name="user_type" id="user_type" value="tutor" />
-        <input type="submit" value="Sign up" class="btn btn-primary btn-large btn-block">
+
+    </form>
 
     </div>
     </div>
-    </div>
-    </form>
-    </div>
-    </div>
-  </div>
+</div>
     <script>
     const tabElements = document.querySelectorAll('button[role="tab"]');
 const panelElements = document.querySelectorAll('[role="tabpanel"]');

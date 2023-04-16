@@ -10,53 +10,75 @@
       </button>
     </div>
     <div id="tab-panel-1" aria-labelledby="tab-1" role="tabpanel" tabindex="0">
-    <form action="/handle_login" method="POST" name="form">
-    <div class="login">
-    <div class="login-screen">
-    <div class="app-title">
-    <h1>Student Login</h1>
-    </div>
-    <div class="login-form">
-    <div class="control-group">
-        <label for="title">Username</label>
-                    <input type="text" class="login-field" value="" placeholder="username" name="username">
-    <label class="login-field-icon fui-user" for="login-name"></label></div>
-    <div class="control-group">
-        <label for="title">Password</label>
-                    <input type="password" class="login-field" value="" placeholder="password" name="password">
-    <label class="login-field-icon fui-lock" for="login-pass"></label></div>
-    <input type="hidden" name="user_type" id="user_type" value="student" />
-        <input type="submit" value="Log in" class="btn btn-primary btn-large btn-block">
+
+        <div class="card">
+        <form action="/handle_login" method="POST" name="form">
+        <div class="card-header">
+            Student Login
+        </div>
+
+        <div class="card-body">
+
+        <div class="form-group">
+            <label for="title">Username</label>
+            <input type="text" class="form-control" value="" placeholder="username" name="username">
+            <label class="login-field-icon fui-user" for="login-name"></label>
+        </div>
+
+        <div class="form-group">
+            <label for="title">Password</label>
+            <input type="password" class="form-control" value="" placeholder="password" name="password">
+            <label class="login-field-icon fui-lock" for="login-pass"></label>
+        </div>
+
+        <input type="hidden" name="user_type" id="user_type" value="student" />
+        </div>
+
+        <div class="card-footer">
+        <input type="submit" value="Log in" class="btn btn-sm btn-primary float-right">
+        <a class="btn btn-sm btn-secondary float-left" href="{{url_for('Routes.homepage', user=user)}}">Cancel</a>
+        <a class="btn btn-sm btn-secondary float-right" href="{{url_for('Routes.signup')}}">Signup</a>
+        </div>
+        </form>
+
+        </div>
 
     </div>
-    </div>
-    </div>
-    </form>
-    </div>
+
     <div id="tab-panel-2" aria-labelledby="tab-2" role="tabpanel" tabindex="-1" hidden>
-      <form action="/handle_login" method="POST">
-    <div class="login">
-    <div class="login-screen">
-    <div class="app-title">
-    <h1>Tutor Login</h1>
-    </div>
-    <div class="login-form">
-    <div class="control-group">
-        <label for="title">Username</label>
-                    <input type="text" class="login-field" value="" placeholder="username" name="username">
-    <label class="login-field-icon fui-user" for="login-name"></label></div>
-    <div class="control-group">
-        <label for="title">Password</label>
-                    <input type="password" class="login-field" value="" placeholder="password" name="password">
-    <label class="login-field-icon fui-lock" for="login-pass"></label></div>
-    <input type="hidden" name="user_type" id="user_type" value="tutor" />
-        <input type="submit" value="Log in" class="btn btn-primary btn-large btn-block">
 
-    </div>
-    </div>
-    </div>
-    </form>
-    </div>
+        <div class="card">
+        <form action="/handle_login" method="POST" name="form">
+        <div class="card-header">
+            Tutor Login
+        </div>
+
+        <div class="card-body">
+
+        <div class="form-group">
+            <label for="title">Username</label>
+            <input type="text" class="form-control" value="" placeholder="username" name="username">
+            <label class="login-field-icon fui-user" for="login-name"></label>
+        </div>
+
+        <div class="form-group">
+            <label for="title">Password</label>
+            <input type="password" class="form-control" value="" placeholder="password" name="password">
+            <label class="login-field-icon fui-lock" for="login-pass"></label>
+        </div>
+
+        <input type="hidden" name="user_type" id="user_type" value="tutor" />
+        </div>
+
+        <div class="card-footer">
+        <input type="submit" value="Log in" class="btn btn-sm btn-primary float-right">
+        <a class="btn btn-sm btn-secondary float-left" href="{{url_for('Routes.homepage', user=user)}}">Cancel</a>
+        <a class="btn btn-sm btn-secondary float-right" href="{{url_for('Routes.signup')}}">Signup</a>
+        </div>
+        </form>
+
+        </div>
+
     </div>
   </div>
     <script>
