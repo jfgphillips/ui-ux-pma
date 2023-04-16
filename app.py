@@ -8,7 +8,14 @@ from flask_migrate import Migrate
 
 from blocklist import BLOCKLIST
 from db import db
-from resources import CourseRegisterBlueprint, CourseBlueprint, StudentBlueprint, TutorBlueprint, AuthBlueprint, RoutesBlueprint
+from resources import (
+    CourseRegisterBlueprint,
+    CourseBlueprint,
+    StudentBlueprint,
+    TutorBlueprint,
+    AuthBlueprint,
+    RoutesBlueprint,
+)
 
 from constants import JWT_SECRET_KEY
 
@@ -31,9 +38,9 @@ def create_app(db_url=None):
     api = Api(app)
 
     app.config["JWT_SECRET_KEY"] = JWT_SECRET_KEY
-    app.config['JWT_TOKEN_LOCATION'] = ['cookies']
-    app.config['JWT_COOKIE_CSRF_PROTECT'] = False
-    app.config['JWT_CSRF_CHECK_FORM'] = False
+    app.config["JWT_TOKEN_LOCATION"] = ["cookies", "headers"]
+    app.config["JWT_COOKIE_CSRF_PROTECT"] = False
+    app.config["JWT_CSRF_CHECK_FORM"] = False
     jwt = JWTManager(app)
 
     @jwt.token_in_blocklist_loader
