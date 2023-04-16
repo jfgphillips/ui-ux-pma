@@ -1,10 +1,12 @@
 from flask.views import MethodView
 from flask_smorest import Blueprint, abort
+from passlib.handlers.pbkdf2 import pbkdf2_sha256
 from sqlalchemy.exc import SQLAlchemyError, IntegrityError
+from flask_jwt_extended import create_access_token, jwt_required, get_jwt
 
 from db import db
 from models import TutorModel
-from schemas import TutorSchema, TutorUpdateSchema
+from schemas import TutorSchema, TutorUpdateSchema, LoginSchema
 
 blp = Blueprint("Tutors", __name__, description="Operations on Tutors")
 
@@ -15,10 +17,17 @@ class TutorList(MethodView):
     def get(self):
         return TutorModel.query.all()
 
-    @blp.arguments(TutorSchema)
+    @staticmethod
+    @blp.arguments(TutorSchema, location="form", content_type="form")
     @blp.response(201, TutorSchema)
-    def post(self, student_data):
-        tutor = TutorModel(**student_data)
+    def post(tutor_data):
+        print(tutor_data)
+        if TutorModel.query.filter(TutorModel.username == tutor_data["username"]).first():
+            abort(409, message="a student with that username already exists")
+
+        tutor_data["password"] = pbkdf2_sha256.hash(tutor_data["password"])
+
+        tutor = TutorModel(**tutor_data)
 
         try:
             db.session.add(tutor)
@@ -32,18 +41,25 @@ class TutorList(MethodView):
         return tutor
 
 
-@blp.route("/tutors/<string:tutor_id>")
+@blp.route("/tutors/<int:tutor_id>")
 class Tutor(MethodView):
+
+    @staticmethod
     @blp.response(200, TutorSchema)
-    def get(self, tutor_id):
+    def get(tutor_id):
         tutor = TutorModel.query.get_or_404(tutor_id)
         return tutor
 
+    @jwt_required()
     def delete(self, tutor_id):
-        tutor = TutorModel.query.get_or_404(tutor_id)
-        db.session.delete(tutor)
-        db.session.commit()
-        return {"message": "tutors deleted"}
+        jwt_payload = get_jwt()
+        if jwt_payload["user_type"] == "admin" or jwt_payload["sub"] == tutor_id:
+            tutor = TutorModel.query.get_or_404(tutor_id)
+            db.session.delete(tutor)
+            db.session.commit()
+            return {"message": "tutors deleted"}
+
+        abort(401, message="you are not permissioned to delete other accounts")
 
     @blp.arguments(TutorUpdateSchema)
     @blp.response(204, TutorSchema)

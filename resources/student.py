@@ -1,6 +1,8 @@
 from flask.views import MethodView
+from flask_jwt_extended import jwt_required, get_jwt
 from flask_smorest import Blueprint, abort
 from sqlalchemy.exc import SQLAlchemyError, IntegrityError
+from passlib.hash import pbkdf2_sha256
 
 from db import db
 from models import StudentModel
@@ -15,9 +17,13 @@ class StudentList(MethodView):
     def get(self):
         return StudentModel.query.all()
 
-    @blp.arguments(StudentSchema)
+    @blp.arguments(StudentSchema, location="form", content_type="form")
     @blp.response(201, StudentSchema)
     def post(self, student_data):
+        if StudentModel.query.filter(StudentModel.username == student_data["username"]).first():
+            abort(409, message="a student with that username already exists")
+
+        student_data["password"] = pbkdf2_sha256.hash(student_data["password"])
         student = StudentModel(**student_data)
 
         try:
@@ -32,18 +38,24 @@ class StudentList(MethodView):
         return student
 
 
-@blp.route("/students/<string:student_id>")
+@blp.route("/students/<int:student_id>")
 class Student(MethodView):
+    @staticmethod
     @blp.response(200, StudentSchema)
-    def get(self, student_id):
+    def get(student_id):
         student = StudentModel.query.get_or_404(student_id)
         return student
 
+    @jwt_required()
     def delete(self, student_id):
-        student = StudentModel.query.get_or_404(student_id)
-        db.session.delete(student)
-        db.session.commit()
-        return {"message": "student deleted"}
+        jwt_payload = get_jwt()
+        if jwt_payload["user_type"] == "admin" or jwt_payload["sub"] == student_id:
+            student = StudentModel.query.get_or_404(student_id)
+            db.session.delete(student)
+            db.session.commit()
+            return {"message": "deleted student"}
+
+        abort(401, message="you are not allowed to delete other accounts")
 
     @blp.arguments(StudentUpdateSchema)
     @blp.response(204, StudentSchema)
@@ -60,5 +72,4 @@ class Student(MethodView):
 
         db.session.add(student)
         db.session.commit()
-
         return student, status_code

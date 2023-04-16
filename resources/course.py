@@ -3,6 +3,7 @@ import logging
 from flask.views import MethodView
 from flask_smorest import Blueprint, abort
 from sqlalchemy.exc import SQLAlchemyError, IntegrityError
+from flask_jwt_extended import jwt_required
 
 from db import db
 from models import CourseModel
@@ -35,13 +36,14 @@ class CourseList(MethodView):
         return course, 201
 
 
-@blp.route("/courses/<string:course_id>")
+@blp.route("/courses/<int:course_id>")
 class Course(MethodView):
     @blp.response(200, CourseSchema)
     def get(self, course_id):
         course = CourseModel.query.get_or_404(course_id)
         return course
 
+    @jwt_required()
     def delete(self, course_id):
         course = CourseModel.query.get_or_404(course_id)
         db.session.delete(course)

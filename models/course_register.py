@@ -11,4 +11,3 @@ class CourseRegisterModel(db.Model):
     course = db.relationship("CourseModel", back_populates="registers")
     students = db.relationship("StudentModel", back_populates="registers", secondary="StudentRegister")
     tutors = db.relationship("TutorModel", back_populates="registers", secondary="TutorRegister")
-

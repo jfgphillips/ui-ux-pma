@@ -1,5 +1,6 @@
 from marshmallow import Schema, fields
 
+
 class PlainCourseSchema(Schema):
     id = fields.Int(dump_only=True)
     name = fields.Str(required=True)
@@ -15,6 +16,9 @@ class PlainStudentSchema(Schema):
     age = fields.Int(required=True)
     summary = fields.Str(required=False, default="no summary provided")
     profile_picture = fields.Raw(type="file", required=False)
+    username = fields.Str(required=True)
+    password = fields.Str(required=True, load_only=True)
+
 
 class PlainTutorSchema(Schema):
     id = fields.Int(dump_only=True)
@@ -23,6 +27,9 @@ class PlainTutorSchema(Schema):
     age = fields.Int(required=True)
     summary = fields.Str(required=False, default="no summary provided")
     profile_picture = fields.Raw(type="file", required=False)
+    username = fields.Str(required=True)
+    password = fields.Str(required=True, load_only=True)
+
 
 class PlainCourseRegisterSchema(Schema):
     id = fields.Int(dump_only=True)
@@ -30,19 +37,22 @@ class PlainCourseRegisterSchema(Schema):
 
 
 class StudentSchema(PlainStudentSchema):
-    #courses = fields.List(fields.Nested(PlainCourseSchema(), dump_only=True))
+    # courses = fields.List(fields.Nested(PlainCourseSchema(), dump_only=True))
     registers = fields.List(fields.Nested(PlainCourseRegisterSchema(), dump_only=True))
-    #tutors = fields.List(fields.Nested(PlainTutorSchema(), dump_only=True))
+    # tutors = fields.List(fields.Nested(PlainTutorSchema(), dump_only=True))
+
 
 class TutorSchema(PlainTutorSchema):
-    #students = fields.List(fields.Nested(PlainStudentSchema(), dump_only=True))
+    # students = fields.List(fields.Nested(PlainStudentSchema(), dump_only=True))
     registers = fields.List(fields.Nested(PlainCourseRegisterSchema(), dump_only=True))
-    #courses = fields.List(fields.Nested(PlainCourseSchema(), dump_only=True))
+    # courses = fields.List(fields.Nested(PlainCourseSchema(), dump_only=True))
+
 
 class CourseSchema(PlainCourseSchema):
     students = fields.List(fields.Nested(PlainStudentSchema(), dump_only=True))
     registers = fields.List(fields.Nested(PlainCourseRegisterSchema(), dump_only=True))
-    #tutors = fields.List(fields.Nested(PlainTutorSchema(), dump_only=True))
+    # tutors = fields.List(fields.Nested(PlainTutorSchema(), dump_only=True))
+
 
 class CourseRegisterSchema(PlainCourseRegisterSchema):
     course_id = fields.Int(load_only=True)
@@ -50,10 +60,12 @@ class CourseRegisterSchema(PlainCourseRegisterSchema):
     students = fields.List(fields.Nested(PlainStudentSchema(), dump_only=True))
     tutors = fields.List(fields.Nested(PlainTutorSchema(), dump_only=True))
 
+
 class CourseRegisterAndStudentSchema(Schema):
     message = fields.Str()
     course_register = fields.Nested(CourseRegisterSchema())
     student = fields.Nested(StudentSchema())
+
 
 class CourseRegisterAndTutorSchema(Schema):
     message = fields.Str()
@@ -76,6 +88,7 @@ class TutorUpdateSchema(Schema):
     summary = fields.Str()
     profile_picture = fields.Raw(type="file")
 
+
 class CourseUpdateSchema(Schema):
     name = fields.Str()
     subject_type = fields.Str()
@@ -84,10 +97,11 @@ class CourseUpdateSchema(Schema):
     summary = fields.Str()
 
 
-
+class LoginSchema(Schema):
+    username = fields.Str(required=True)
+    password = fields.Str(required=True)
 
 
 class CourseRegisterUpdateSchema(Schema):
     course_id = fields.Int()
     students = fields.Int()
-

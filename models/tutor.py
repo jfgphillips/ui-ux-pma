@@ -11,4 +11,7 @@ class TutorModel(db.Model):
     summary = db.Column(db.String)
     profile_picture = db.Column(db.String)
 
+    username = db.Column(db.String, unique=True, nullable=False)
+    password = db.Column(db.String, nullable=False)
+
     registers = db.relationship("CourseRegisterModel", back_populates="tutors", secondary="TutorRegister")

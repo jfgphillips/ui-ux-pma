@@ -1,5 +1,6 @@
 from db import db
 
+
 class TutorRegister(db.Model):
     __tablename__ = "TutorRegister"
 
