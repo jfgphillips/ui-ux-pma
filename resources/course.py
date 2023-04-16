@@ -3,6 +3,7 @@ import logging
 from flask.views import MethodView
 from flask_smorest import Blueprint, abort
 from sqlalchemy.exc import SQLAlchemyError, IntegrityError
+from flask_jwt_extended import jwt_required
 
 from db import db
 from models import CourseModel
@@ -42,6 +43,7 @@ class Course(MethodView):
         course = CourseModel.query.get_or_404(course_id)
         return course
 
+    @jwt_required()
     def delete(self, course_id):
         course = CourseModel.query.get_or_404(course_id)
         db.session.delete(course)

@@ -1,12 +1,12 @@
 from flask.views import MethodView
-from flask_jwt_extended import create_access_token
+from flask_jwt_extended import jwt_required, get_jwt
 from flask_smorest import Blueprint, abort
 from sqlalchemy.exc import SQLAlchemyError, IntegrityError
 from passlib.hash import pbkdf2_sha256
 
 from db import db
 from models import StudentModel
-from schemas import StudentSchema, StudentUpdateSchema, LoginSchema
+from schemas import StudentSchema, StudentUpdateSchema
 
 blp = Blueprint("Students", __name__, description="Operations on students")
 
@@ -37,32 +37,25 @@ class StudentList(MethodView):
 
         return student
 
-@blp.route("/students/login")
-class StudentLogin(MethodView):
-    @blp.arguments(LoginSchema)
-    def post(self, login_data):
-        student = StudentModel.query.filter(StudentModel.username == login_data["username"]).first()
-
-        if student and pbkdf2_sha256.verify(login_data["password"], student.password):
-            access_token = create_access_token(identity=student.id)
-            return {"access_token": access_token}
-
-        abort(401, message="Invalid credentials")
-
-
 
 @blp.route("/students/<int:student_id>")
 class Student(MethodView):
+    @staticmethod
     @blp.response(200, StudentSchema)
-    def get(self, student_id):
+    def get(student_id):
         student = StudentModel.query.get_or_404(student_id)
         return student
 
+    @jwt_required()
     def delete(self, student_id):
-        student = StudentModel.query.get_or_404(student_id)
-        db.session.delete(student)
-        db.session.commit()
-        return {"message": "student deleted"}
+        jwt_payload = get_jwt()
+        if jwt_payload["user_type"] == "admin" or jwt_payload["sub"] == student_id:
+            student = StudentModel.query.get_or_404(student_id)
+            db.session.delete(student)
+            db.session.commit()
+            return {"message": "deleted student"}
+
+        abort(401, message="you are not allowed to delete other accounts")
 
     @blp.arguments(StudentUpdateSchema)
     @blp.response(204, StudentSchema)

@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+{% block content %}
+  <div class="tabs">
+    <div role="tablist">
+      <button id="tab-1" aria-selected="true" aria-controls="tab-panel-1" role="tab" type="button" tabindex="0">
+        Student
+      </button>
+      <button id="tab-2" aria-selected="false" aria-controls="tab-panel-2" role="tab" type="button" tabindex="-1">
+        Tutor
+      </button>
+    </div>
+    <div id="tab-panel-1" aria-labelledby="tab-1" role="tabpanel" tabindex="0">
+    <form action="/handle_login" method="POST" name="form">
+    <div class="login">
+    <div class="login-screen">
+    <div class="app-title">
+    <h1>Student Login</h1>
+    </div>
+    <div class="login-form">
+    <div class="control-group">
+        <label for="title">Username</label>
+                    <input type="text" class="login-field" value="" placeholder="username" name="username">
+    <label class="login-field-icon fui-user" for="login-name"></label></div>
+    <div class="control-group">
+        <label for="title">Password</label>
+                    <input type="password" class="login-field" value="" placeholder="password" name="password">
+    <label class="login-field-icon fui-lock" for="login-pass"></label></div>
+    <input type="hidden" name="user_type" id="user_type" value="student" />
+        <input type="submit" value="Log in" class="btn btn-primary btn-large btn-block">
+
+    </div>
+    </div>
+    </div>
+    </form>
+    </div>
+    <div id="tab-panel-2" aria-labelledby="tab-2" role="tabpanel" tabindex="-1" hidden>
+      <form action="/handle_login" method="POST">
+    <div class="login">
+    <div class="login-screen">
+    <div class="app-title">
+    <h1>Tutor Login</h1>
+    </div>
+    <div class="login-form">
+    <div class="control-group">
+        <label for="title">Username</label>
+                    <input type="text" class="login-field" value="" placeholder="username" name="username">
+    <label class="login-field-icon fui-user" for="login-name"></label></div>
+    <div class="control-group">
+        <label for="title">Password</label>
+                    <input type="password" class="login-field" value="" placeholder="password" name="password">
+    <label class="login-field-icon fui-lock" for="login-pass"></label></div>
+    <input type="hidden" name="user_type" id="user_type" value="tutor" />
+        <input type="submit" value="Log in" class="btn btn-primary btn-large btn-block">
+
+    </div>
+    </div>
+    </div>
+    </form>
+    </div>
+    </div>
+  </div>
+    <script>
+    const tabElements = document.querySelectorAll('button[role="tab"]');
+const panelElements = document.querySelectorAll('[role="tabpanel"]');
+let activeIndex = 0;
+
+// Listen to clicks and key presses on tabs
+tabElements.forEach(function (tab, index) {
+  tab.addEventListener("click", function (event) {
+    setActiveTab(index);
+  });
+
+  tab.addEventListener("keydown", function (event) {
+    const lastIndex = tabElements.length - 1;
+
+    if (event.code === "ArrowLeft" || event.code === "ArrowUp") {
+      if (activeIndex === 0) {
+        // First element, jump to end
+        setActiveTab(lastIndex);
+      } else {
+        // Move left
+        setActiveTab(activeIndex - 1);
+      }
+    } else if (event.code === "ArrowRight" || event.code === "ArrowDown") {
+      if (activeIndex === lastIndex) {
+        // Last element, jump to beginning
+        setActiveTab(0);
+      } else {
+        // Move right
+        setActiveTab(activeIndex + 1);
+      }
+    } else if (event.code === "Home") {
+      // Move to beginning
+      setActiveTab(0);
+    } else if (event.code === "End") {
+      // Move to end
+      setActiveTab(lastIndex);
+    }
+  });
+});
+
+function setActiveTab(index) {
+  // Make currently active tab inactive
+  tabElements[activeIndex].setAttribute("aria-selected", "false");
+  tabElements[activeIndex].tabIndex = -1;
+
+  // Set the new tab as active
+  tabElements[index].setAttribute("aria-selected", "true");
+  tabElements[index].tabIndex = 0;
+  tabElements[index].focus();
+
+  setActivePanel(index);
+  activeIndex = index;
+}
+
+function setActivePanel(index) {
+  // Hide currently active panel
+  panelElements[activeIndex].setAttribute("hidden", "");
+  panelElements[activeIndex].tabIndex = -1;
+
+  // Show the new active panel
+  panelElements[index].removeAttribute("hidden");
+  panelElements[index].tabIndex = 0;
+}
+
+    </script>
+{% endblock content %}

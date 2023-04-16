@@ -1,0 +1,165 @@
+{% extends "base.html" %}
+{% block content %}
+
+<!-- Tab links -->
+<div class="tab">
+  <button class="tablinks" onclick="openCity(event, 'Students')">Student</button>
+  <button class="tablinks" onclick="openCity(event, 'Tutor')">Tutor</button>
+</div>
+
+<!-- Tab content -->
+<div id="Tutor" class="tabcontent">
+<h3>Tutor</h3>
+<section class="container">
+<div class="card">
+    {%  if post is none %}
+        <form method="POST" action="{{url_for('TutorList.post')}}">
+        <div class="card-header">
+        Tutor - Create
+    </div>
+
+    <div class="card-body">
+        <div class="form-group">
+            <label for="title">Title</label>
+            <input type="text" class="form-control" id="title" name="title" value="{{ post.title}}">
+        </div>
+        <div class="form-group">
+            <label for="year">Year</label>
+            <input type="text" class="form-control" id="year" name="year" value="{{post.year}}">
+        </div>
+        <div class="form-group">
+            <label for="rating">Rating</label>
+            <input type="text" class="form-control" id="rating" name="rating" value="{{ post.rating}}">
+        </div>
+        <div class="form-group">
+            <label for="description">Description</label>
+            <textarea type="text" class="form-control" id="description" name="description" rows="10">{{ post.description }}</textarea>
+        </div>
+    </div>
+    <div class="card-footer">
+        <a class="btn btn-sm, btn-secondary float-left" href="{{url_for('list')}}">Cancel</a>
+        <input class="btn btn-sm, btn-secondary float-right" type="submit" id="submit" value="save"> &nbsp;
+    </div>
+</form>
+        {% else %}
+                   <form method="PUT" action="{{url_for('Tutor.put')}}">
+        <div class="card-header">
+        Board - Write
+    </div>
+
+    <div class="card-body">
+        <div class="form-group">
+            <label for="title">Title</label>
+            <input type="text" class="form-control" id="title" name="title" value="{{ post.title}}">
+        </div>
+        <div class="form-group">
+            <label for="year">Year</label>
+            <input type="text" class="form-control" id="year" name="year" value="{{post.year}}">
+        </div>
+        <div class="form-group">
+            <label for="rating">Rating</label>
+            <input type="text" class="form-control" id="rating" name="rating" value="{{ post.rating}}">
+        </div>
+        <div class="form-group">
+            <label for="description">Description</label>
+            <textarea type="text" class="form-control" id="description" name="description" rows="10">{{ post.description }}</textarea>
+        </div>
+    </div>
+    <div class="card-footer">
+        <a class="btn btn-sm, btn-secondary float-left" href="{{url_for('list')}}">Cancel</a>
+        <input class="btn btn-sm, btn-secondary float-right" type="submit" id="submit" value="save"> &nbsp;
+    </div>
+</form>
+    {% endif %}
+</div>
+</section>
+</div>
+<div id="Tutor" class="tabcontent">
+<h3>Tutor</h3>
+<section class="container">
+<div class="card">
+    {% if post is none %}
+        <form method="POST" action="{{url_for('TutorList.post')}}">
+        <div class="card-header">
+        Tutor - Create
+    </div>
+
+    <div class="card-body">
+        <div class="form-group">
+            <label for="title">Title</label>
+            <input type="text" class="form-control" id="title" name="title" value="{{ post.title}}">
+        </div>
+        <div class="form-group">
+            <label for="year">Year</label>
+            <input type="text" class="form-control" id="year" name="year" value="{{post.year}}">
+        </div>
+        <div class="form-group">
+            <label for="rating">Rating</label>
+            <input type="text" class="form-control" id="rating" name="rating" value="{{ post.rating}}">
+        </div>
+        <div class="form-group">
+            <label for="description">Description</label>
+            <textarea type="text" class="form-control" id="description" name="description" rows="10">{{ post.description }}</textarea>
+        </div>
+    </div>
+    <div class="card-footer">
+        <a class="btn btn-sm, btn-secondary float-left" href="{{url_for('list')}}">Cancel</a>
+        <input class="btn btn-sm, btn-secondary float-right" type="submit" id="submit" value="save"> &nbsp;
+    </div>
+</form>
+        {% else %}
+                   <form method="PUT" action="{{url_for('Tutor.put')}}">
+        <div class="card-header">
+        Board - Write
+    </div>
+
+    <div class="card-body">
+        <div class="form-group">
+            <label for="title">Title</label>
+            <input type="text" class="form-control" id="title" name="title" value="{{ post.title}}">
+        </div>
+        <div class="form-group">
+            <label for="year">Year</label>
+            <input type="text" class="form-control" id="year" name="year" value="{{post.year}}">
+        </div>
+        <div class="form-group">
+            <label for="rating">Rating</label>
+            <input type="text" class="form-control" id="rating" name="rating" value="{{ post.rating}}">
+        </div>
+        <div class="form-group">
+            <label for="description">Description</label>
+            <textarea type="text" class="form-control" id="description" name="description" rows="10">{{ post.description }}</textarea>
+        </div>
+    </div>
+    <div class="card-footer">
+        <a class="btn btn-sm, btn-secondary float-left" href="{{url_for('list')}}">Cancel</a>
+        <input class="btn btn-sm, btn-secondary float-right" type="submit" id="submit" value="save"> &nbsp;
+    </div>
+</form>
+    {% endif %}
+</div>
+</section>
+</div>
+<script>
+function openCity(evt, cityName) {
+  var i, tabcontent, tablinks;
+
+
+  tabcontent = document.getElementsByClassName("tabcontent");
+  for (i = 0; i < tabcontent.length; i++) {
+    tabcontent[i].style.display = "none";
+  }
+
+
+  tablinks = document.getElementsByClassName("tablinks");
+  for (i = 0; i < tablinks.length; i++) {
+    tablinks[i].className = tablinks[i].className.replace(" active", "");
+  }
+
+  document.getElementById(cityName).style.display = "block";
+  evt.currentTarget.className += " active";
+}
+</script>
+
+{% endblock content %}
+

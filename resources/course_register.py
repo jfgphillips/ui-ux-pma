@@ -1,13 +1,14 @@
-
 from flask.views import MethodView
 from flask_smorest import Blueprint, abort
 from sqlalchemy.exc import SQLAlchemyError, IntegrityError
+from flask_jwt_extended import jwt_required
 
 from db import db
 from models import CourseRegisterModel, CourseModel, StudentModel, TutorModel
 from schemas import CourseRegisterSchema, CourseRegisterAndStudentSchema, CourseRegisterAndTutorSchema
 
 blp = Blueprint("CourseRegisters", "course_registers", description="Operations on course registers")
+
 
 @blp.route("/courses/<int:course_id>/course_registers")
 class RegistersInCourse(MethodView):
@@ -19,7 +20,9 @@ class RegistersInCourse(MethodView):
     @blp.arguments(CourseRegisterSchema)
     @blp.response(201, CourseRegisterSchema)
     def post(self, course_register_data, course_id):
-        if CourseRegisterModel.query.filter(CourseRegisterModel.course_id==course_id, CourseRegisterModel.name == course_register_data["name"]).first():
+        if CourseRegisterModel.query.filter(
+            CourseRegisterModel.course_id == course_id, CourseRegisterModel.name == course_register_data["name"]
+        ).first():
             abort(400, message="a course register with that name already exists in that course")
         course_register = CourseRegisterModel(**course_register_data, course_id=course_id)
         try:
@@ -32,9 +35,9 @@ class RegistersInCourse(MethodView):
 
         return course_register
 
+
 @blp.route("/course_registers")
 class CourseRegisterList(MethodView):
-
     @blp.response(200, CourseRegisterSchema(many=True))
     def get(self):
         return CourseRegisterModel.query.all()
@@ -88,6 +91,7 @@ class LinkCourseRegistersToStudents(MethodView):
 
         return {"message": "student removed from course", "student": student, "course_register": course_register}
 
+
 @blp.route("/tutors/<int:tutor_id>/course_registers/<int:course_register_id>")
 class LinkCourseRegistersToTutors(MethodView):
     @blp.response(201, CourseRegisterSchema)
@@ -130,11 +134,12 @@ class CourseRegister(MethodView):
         course_register = CourseRegisterModel.query.get_or_404(course_register_id)
         return course_register
 
+    @jwt_required()
     def delete(self, course_register_id):
         course_register = CourseRegisterModel.query.get_or_404(course_register_id)
         if course_register.students:
             abort(400, message="there are students enrolled on this course")
 
         db.session.delete(course_register)
-        db.session.commmit()
+        db.session.commit()
         return {"message": "course register deleted"}

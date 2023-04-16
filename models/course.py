@@ -12,4 +12,4 @@ class CourseModel(db.Model):
     summary = db.Column(db.String)
 
     registers = db.relationship("CourseRegisterModel", back_populates="course", lazy="dynamic")
-    #students = db.relationship("StudentModel", back_populates="courses", secondary="CourseRegisters")
+    # students = db.relationship("StudentModel", back_populates="courses", secondary="CourseRegisters")

@@ -2,7 +2,7 @@ from flask.views import MethodView
 from flask_smorest import Blueprint, abort
 from passlib.handlers.pbkdf2 import pbkdf2_sha256
 from sqlalchemy.exc import SQLAlchemyError, IntegrityError
-from flask_jwt_extended import create_access_token
+from flask_jwt_extended import create_access_token, jwt_required, get_jwt
 
 from db import db
 from models import TutorModel
@@ -38,18 +38,6 @@ class TutorList(MethodView):
 
         return tutor
 
-@blp.route("/tutors/login")
-class TutorLogin():
-    @blp.arguments(LoginSchema)
-    def post(self, login_data):
-        tutor = TutorModel.query.filter(TutorModel.username == login_data["username"]).first()
-
-        if tutor and pbkdf2_sha256.verify(login_data["password"], tutor.password):
-            access_token = create_access_token(identity=tutor.id)
-            return {"access_token": access_token}
-
-        abort(401, message="Invalid credentials")
-
 
 @blp.route("/tutors/<int:tutor_id>")
 class Tutor(MethodView):
@@ -58,11 +46,16 @@ class Tutor(MethodView):
         tutor = TutorModel.query.get_or_404(tutor_id)
         return tutor
 
+    @jwt_required()
     def delete(self, tutor_id):
-        tutor = TutorModel.query.get_or_404(tutor_id)
-        db.session.delete(tutor)
-        db.session.commit()
-        return {"message": "tutors deleted"}
+        jwt_payload = get_jwt()
+        if jwt_payload["user_type"] == "admin" or jwt_payload["sub"] == tutor_id:
+            tutor = TutorModel.query.get_or_404(tutor_id)
+            db.session.delete(tutor)
+            db.session.commit()
+            return {"message": "tutors deleted"}
+
+        abort(401, message="you are not permissioned to delete other accounts")
 
     @blp.arguments(TutorUpdateSchema)
     @blp.response(204, TutorSchema)
