@@ -10,6 +10,7 @@ from flask_jwt_extended import jwt_required, verify_jwt_in_request, get_jwt
 from resources.auth import TokenManager
 from resources.student import Student, StudentList
 from resources.tutor import Tutor, TutorList
+from resources.utils import File
 
 blp = Blueprint("Routes", __name__, description="html operations")
 
@@ -67,6 +68,9 @@ def homepage(user=None):
 
     return render_template("homepage.html", user=user)
 
+@blp.route("/")
+def root():
+    return redirect(url_for("Routes.homepage"))
 
 @blp.route("/user_info")
 def user_info():
@@ -125,15 +129,27 @@ def signup():
 
 @blp.post("/handle_signup")
 def handle_signup():
+    response = None
+    file_upload = None
     user_type = request.form["user_type"]
+    print(request.files)
     payload = _convert_form_to_json_payload(request.form, ["user_type"])
+    file_payload = {"profile_picture": request.files,
+                    "user_type": user_type}
     if user_type == "student":
         response = requests.post(f"{request.url_root}{url_for('Students.StudentList')}", data=payload)
+        if response.status_code == 201:
+            file_payload["uid"] = response.json()["id"]
+            file_upload = File.post(file_payload)
+            print(file_upload)
 
     elif user_type == "tutor":
         response = requests.post(f"{request.url_root}{url_for('Tutors.TutorList')}", data=payload)
+        if response.status_code == 201:
+            file_payload["uid"] = response.json()["id"]
+            file_upload = File.post(file_payload)
 
-    if response.status_code == 201:
+    if response and response.status_code == 201 and file_upload and file_upload.status_code == 201:
         return redirect(url_for("Routes.login"))
 
     return render_template("register_form.html")
