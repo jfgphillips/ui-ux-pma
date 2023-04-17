@@ -42,4 +42,3 @@ class File(MethodView):
             return {"filepath": filepath}, 200
 
         abort(422, message="invalid filepath specified")
-

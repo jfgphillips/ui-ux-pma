@@ -43,8 +43,8 @@ def create_app(db_url=None):
 
     app.config["JWT_SECRET_KEY"] = JWT_SECRET_KEY
     app.config["JWT_TOKEN_LOCATION"] = ["cookies", "headers"]
-    app.config["JWT_COOKIE_CSRF_PROTECT"] = True
-    app.config["JWT_CSRF_CHECK_FORM"] = True
+    app.config["JWT_COOKIE_CSRF_PROTECT"] = False
+    app.config["JWT_CSRF_CHECK_FORM"] = False
     app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(minutes=30)
     jwt = JWTManager(app)
 

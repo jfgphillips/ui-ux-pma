@@ -38,8 +38,9 @@ class RegistersInCourse(MethodView):
 
 @blp.route("/course_registers")
 class CourseRegisterList(MethodView):
+    @staticmethod
     @blp.response(200, CourseRegisterSchema(many=True))
-    def get(self):
+    def get():
         return CourseRegisterModel.query.all()
 
     @blp.arguments(CourseRegisterSchema)

@@ -7,7 +7,9 @@ from flask.views import MethodView
 from flask_smorest import Blueprint, abort
 from flask_jwt_extended import jwt_required, verify_jwt_in_request, get_jwt
 
-from resources.auth import TokenManager
+from resources.auth import TokenManagergt
+from resources.course import CourseList
+from resources.course_register import CourseRegisterList
 from resources.student import Student, StudentList
 from resources.tutor import Tutor, TutorList
 from resources.utils import File
@@ -53,6 +55,10 @@ def handle_login():
 
     return redirect(url_for("Routes.login"))
 
+@blp.route("/testing")
+def hope_this_works():
+    return render_template("homepage.html", user=None)
+
 
 @blp.route("/homepage")
 def homepage(user=None):
@@ -66,7 +72,13 @@ def homepage(user=None):
         elif payload["user_type"] == "student":
             user = Student.get(id).json
 
-    return render_template("homepage.html", user=user)
+    tutors = TutorList.get().json
+    courses = CourseList.get().json
+    students = StudentList.get().json
+    events = CourseRegisterList.get().json
+
+
+    return render_template("homepage.html", user=user, tutors=tutors,events=events,students=students,courses=courses)
 
 @blp.route("/")
 def root():
@@ -125,6 +137,33 @@ def signup():
         return homepage()
 
     return render_template("register_form.html")
+
+@blp.route("/list_fields/<string:type>", methods=["GET", "POST"])
+def list_fields(type):
+    fields = None
+    if type == "tutor":
+        fields = TutorList.get().json
+
+    elif type == "course":
+        fields = CourseList.get().json
+
+    elif type == "student":
+        fields = StudentList.get().json
+
+    else:
+        fields = CourseRegisterList.get().json
+
+    if fields is None:
+        redirect(url_for("Routes.Homepage"))
+
+
+    return render_template("list.html", fields=fields, type=type)
+
+@blp.post("/detail")
+def detail(name, summary):
+
+    return render_template("detail.html", name=name, summary=summary)
+
 
 
 @blp.post("/handle_signup")

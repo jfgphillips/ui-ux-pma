@@ -13,8 +13,9 @@ blp = Blueprint("Tutors", __name__, description="Operations on Tutors")
 
 @blp.route("/tutors")
 class TutorList(MethodView):
+    @staticmethod
     @blp.response(200, TutorSchema(many=True))
-    def get(self):
+    def get():
         return TutorModel.query.all()
 
     @staticmethod
