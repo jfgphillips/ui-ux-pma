@@ -7,9 +7,9 @@ from flask.views import MethodView
 from flask_smorest import Blueprint, abort
 from flask_jwt_extended import jwt_required, verify_jwt_in_request, get_jwt
 
-from resources.auth import TokenManagergt
+from resources.auth import TokenManager
 from resources.course import CourseList
-from resources.course_register import CourseRegisterList
+from resources.course_register import CourseRegisterList, CourseRegister, RegistersInStudent, RegistersInTutor
 from resources.student import Student, StudentList
 from resources.tutor import Tutor, TutorList
 from resources.utils import File
@@ -61,7 +61,8 @@ def hope_this_works():
 
 
 @blp.route("/homepage")
-def homepage(user=None):
+def homepage():
+    user=None
     jwt = verify_jwt_in_request(optional=True)
     if jwt:
         payload = get_jwt()
@@ -78,7 +79,7 @@ def homepage(user=None):
     events = CourseRegisterList.get().json
 
 
-    return render_template("homepage.html", user=user, tutors=tutors,events=events,students=students,courses=courses)
+    return render_template("homepage.html", user=user, tutors=tutors, events=events,students=students,courses=courses)
 
 @blp.route("/")
 def root():
@@ -90,12 +91,12 @@ def user_info():
     jwt = verify_jwt_in_request(optional=True)
     if jwt:
         payload = get_jwt()
-        id = payload["sub"]
+        uid = payload["sub"]
         if payload["user_type"] == "tutor":
-            user = Tutor.get(id).json
+            user = Tutor.get(uid).json
 
         elif payload["user_type"] == "student":
-            user = Student.get(id).json
+            user = Student.get(uid).json
 
         return render_template("user_info.html", user=user, user_type=payload["user_type"])
 
@@ -154,15 +155,15 @@ def list_fields(type):
         fields = CourseRegisterList.get().json
 
     if fields is None:
-        redirect(url_for("Routes.Homepage"))
+        redirect(url_for("Routes.homepage"))
 
 
     return render_template("list.html", fields=fields, type=type)
 
-@blp.post("/detail")
-def detail(name, summary):
-
-    return render_template("detail.html", name=name, summary=summary)
+@blp.route("/detail", methods=["GET", "POST"])
+def detail():
+    args = request.args
+    return render_template("detail.html", name=args["name"], summary=args["summary"], type=args["type"])
 
 
 
@@ -192,3 +193,74 @@ def handle_signup():
         return redirect(url_for("Routes.login"))
 
     return render_template("register_form.html")
+
+
+@blp.get("/my_people")
+@jwt_required(locations=["cookies"])
+def my_people():
+    """Returns students or teachers dependent on which user calls it"""
+    response = None
+    type = None
+    register_ids = []
+    jwt_payload = get_jwt()
+    uid = jwt_payload["sub"]
+    if jwt_payload["user_type"] == "student":
+        type = "My Tutors"
+        response = RegistersInStudent.get(student_id=uid)
+
+    elif jwt_payload["user_type"] == "tutor":
+        type = "My Students"
+        response = RegistersInTutor.get(tutor_id=uid)
+
+
+    if response and response.status_code == 200:
+        # TODO: implement this properly in the backend to remove this horrible logic
+        desired_fields = []
+        for raw_json in response.response:
+            json_data = json.loads(raw_json)
+            for json_item in json_data:
+                if jwt_payload["user_type"] == "tutor":
+                    desired_fields.append(json_item.get("students"))
+                elif jwt_payload["user_type"] == "student":
+                    desired_fields.append(json_item.get("tutors"))
+
+        flat_list = [item for sublist in desired_fields for item in sublist]
+        return render_template("list.html", fields=flat_list, type=type)
+
+    return redirect(url_for("Routes.homepage"))
+
+
+@blp.get("/my_courses")
+@jwt_required(locations=["cookies"])
+def my_courses():
+    """Returns courses associated with a user"""
+    response = None
+    type = "My Courses"
+    register_ids = []
+    jwt_payload = get_jwt()
+    uid = jwt_payload["sub"]
+    if jwt_payload["user_type"] == "student":
+        response = RegistersInStudent.get(student_id=uid)
+
+    elif jwt_payload["user_type"] == "tutor":
+        response = RegistersInTutor.get(tutor_id=uid)
+
+
+    if response and response.status_code == 200:
+        # TODO: implement this properly in the backend to remove this horrible logic
+        desired_fields = []
+        for raw_json in response.response:
+            json_data = json.loads(raw_json)
+            for json_item in json_data:
+                print(json_item)
+                desired_fields.append(json_item.get("course"))
+
+        return render_template("list.html", fields=desired_fields, type=type)
+
+    return redirect(url_for("Routes.homepage"))
+
+
+@blp.post("/delete_account")
+@jwt_required(locations=["cookies"])
+def delete_account():
+    pass

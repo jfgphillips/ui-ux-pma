@@ -340,10 +340,10 @@
                   ></path>
                 </svg>
                 <a class="home-text26" href="{{ url_for('Routes.user_info', type="course") }}" >Edit Profile</a>
-                <span class="home-text27">My Courses</span>
-                <span class="home-text28">My Tutors</span>
-                <span class="home-text29">
-                  <span>DeleteAccount</span>
+                <a class="home-text27" href="{{ url_for("Routes.my_courses") }}">My Courses</a>
+                <a class="home-text28" href="{{ url_for("Routes.my_people") }}">My People</a>
+                <a class="home-text29" href="{{ url_for("Routes.delete_account") }}">Delete Account </a>
+                  <span>
                   <br />
                   <br />
                   <br />
