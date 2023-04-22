@@ -16,8 +16,9 @@ logger = logging.getLogger(__name__)
 
 @blp.route("/courses")
 class CourseList(MethodView):
+    @staticmethod
     @blp.response(200, CourseSchema(many=True))
-    def get(self):
+    def get():
         return CourseModel.query.all()
 
     @blp.arguments(CourseSchema)

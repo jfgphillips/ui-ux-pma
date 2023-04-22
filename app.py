@@ -1,9 +1,11 @@
 import os
+from datetime import datetime, timezone, timedelta
+
 from dotenv import load_dotenv
 
-from flask import Flask, jsonify
+from flask import Flask, jsonify, url_for, redirect
 from flask_smorest import Api
-from flask_jwt_extended import JWTManager
+from flask_jwt_extended import JWTManager, get_jwt, set_access_cookies
 from flask_migrate import Migrate
 
 from blocklist import BLOCKLIST
@@ -17,7 +19,8 @@ from resources import (
     RoutesBlueprint,
 )
 
-from constants import JWT_SECRET_KEY
+from constants import JWT_SECRET_KEY, UPLOAD_FOLDER
+from resources.auth import TokenRefresh, TokenManager
 
 
 def create_app(db_url=None):
@@ -33,6 +36,7 @@ def create_app(db_url=None):
     app.config["OPENAPI_SWAGGER_UI_URL"] = "https://cdn.jsdelivr.net/npm/swagger-ui-dist/"
     app.config["SQLALCHEMY_DATABASE_URI"] = db_url or os.getenv("DATABASE_URL", "sqlite:///data.db")
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+    app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
     db.init_app(app)
     migrate = Migrate(app, db)
     api = Api(app)
@@ -41,6 +45,7 @@ def create_app(db_url=None):
     app.config["JWT_TOKEN_LOCATION"] = ["cookies", "headers"]
     app.config["JWT_COOKIE_CSRF_PROTECT"] = False
     app.config["JWT_CSRF_CHECK_FORM"] = False
+    app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(minutes=30)
     jwt = JWTManager(app)
 
     @jwt.token_in_blocklist_loader
@@ -49,10 +54,7 @@ def create_app(db_url=None):
 
     @jwt.expired_token_loader
     def expired_token_callback(jwt_header, jwt_payload):
-        return (
-            jsonify({"message": "The token has expired.", "error": "token_expired"}),
-            401,
-        )
+        return TokenManager.unset_jwt()
 
     @jwt.invalid_token_loader
     def invalid_token_callback(error):
@@ -92,6 +94,21 @@ def create_app(db_url=None):
             401,
         )
 
+    @app.after_request
+    def refresh_expiring_jwts(response):
+        try:
+            exp_timestamp = get_jwt()["exp"]
+            now = datetime.now(timezone.utc)
+            target_timestamp = datetime.timestamp(now + timedelta(minutes=15))
+            if target_timestamp > exp_timestamp:
+                refresh_response = TokenRefresh.post()
+                set_access_cookies(response, refresh_response.access_token)
+            return response
+
+        except (RuntimeError, KeyError):
+            # Case where there is not a valid JWT. Just return the original response
+            return response
+
     api.register_blueprint(CourseBlueprint)
     api.register_blueprint(CourseRegisterBlueprint)
     api.register_blueprint(StudentBlueprint)
@@ -105,3 +122,4 @@ def create_app(db_url=None):
 if __name__ == "__main__":
     app = create_app()
     app.run(debug=True)
+

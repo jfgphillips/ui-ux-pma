@@ -35,11 +35,11 @@
     />
     <!--This is the head section-->
     <!-- <style> ... </style> -->
-      <link rel="stylesheet"  href="../static/style.css">
+    <link rel="stylesheet" href="./style.css" />
   </head>
   <body>
     <div>
-        <link rel="stylesheet"  href="../static/home.css">
+      <link href="./home.css" rel="stylesheet" />
 
       <div class="home-container">
         <div class="home-container01">
@@ -52,13 +52,8 @@
             </svg>
             <input type="text" placeholder="Search" class="input" />
             <div class="home-btn-group">
-                {% if user is none %}
-                <a class="home-login button" href="{{ url_for('Routes.login') }}" role="button">Login</a>
-                <a class="home-register button" href="{{ url_for('Routes.signup') }}" role="button">Register</a>
-                {% else %}
-                <a class="home-login button" href="{{ url_for('Routes.logout') }}" role="button">Logout</a>
-                {% endif %}
-
+              <button class="home-login button">Login</button>
+              <button class="home-register button">Register</button>
             </div>
             <div data-role="BurgerMenu" class="home-burger-menu">
               <svg viewBox="0 0 1024 1024" class="home-icon03">
@@ -155,8 +150,8 @@
                         <span class="home-text06">
                           Lorem ipsum dolor sit amet.
                         </span>
-                        <h1 class="home-text07"><span>{{ students|length }}</span></h1>
-                        <a class="home-button1 button" href="{{ url_for('Routes.list_fields', type="student") }}" role="button">Students</a>
+                        <h1 class="home-text07"><span>50</span></h1>
+                        <button class="home-button1 button">Read More</button>
                       </div>
                     </div>
                   </div>
@@ -172,8 +167,8 @@
                         <span class="home-text10">
                           Lorem ipsum dolor sit amet.
                         </span>
-                        <h1 class="home-text11"><span>{{ tutors|length }}</span></h1>
-                        <a class="home-button2 button" href="{{ url_for('Routes.list_fields', type="tutor") }}" role="button">Tutors</a>
+                        <h1 class="home-text11"><span>50</span></h1>
+                        <button class="home-button2 button">Read More</button>
                       </div>
                     </div>
                   </div>
@@ -197,8 +192,8 @@
                         <span class="home-text14">
                           Lorem ipsum dolor sit amet.
                         </span>
-                        <h1 class="home-text15"><span>{{ courses|length }}</span></h1>
-                        <a class="home-button3 button" href="{{ url_for('Routes.list_fields', type="course") }}" role="button">Courses</a>
+                        <h1 class="home-text15"><span>50</span></h1>
+                        <button class="home-button3 button">Read More</button>
                       </div>
                     </div>
                   </div>
@@ -217,8 +212,8 @@
                         <span class="home-text18">
                           Lorem ipsum dolor sit amet.
                         </span>
-                        <h1 class="home-text19"><span>{{ events|length }}</span></h1>
-                        <a class="home-button2 button" href="{{ url_for('Routes.list_fields', type="event") }}" role="button">Events</a>
+                        <h1 class="home-text19"><span>50</span></h1>
+                        <button class="home-button4 button">Read More</button>
                       </div>
                     </div>
                   </div>
@@ -330,7 +325,6 @@
               </div>
             </div>
           </div>
-            {% if user is not none %}
           <div class="home-container21">
             <div class="home-sidebar">
               <nav class="home-nav1">
@@ -339,9 +333,9 @@
                     d="M128 554.667h768c23.552 0 42.667-19.115 42.667-42.667s-19.115-42.667-42.667-42.667h-768c-23.552 0-42.667 19.115-42.667 42.667s19.115 42.667 42.667 42.667zM128 298.667h768c23.552 0 42.667-19.115 42.667-42.667s-19.115-42.667-42.667-42.667h-768c-23.552 0-42.667 19.115-42.667 42.667s19.115 42.667 42.667 42.667zM128 810.667h768c23.552 0 42.667-19.115 42.667-42.667s-19.115-42.667-42.667-42.667h-768c-23.552 0-42.667 19.115-42.667 42.667s19.115 42.667 42.667 42.667z"
                   ></path>
                 </svg>
-                <a class="home-text26" href="{{ url_for('Routes.user_info', type="course") }}" >Edit Profile</a>
-                <span class="home-text27">My Courses</span>
-                <span class="home-text28">My Tutors</span>
+                <span class="home-text26">Edit Profile</span>
+                <span class="home-text27">MyCourses</span>
+                <span class="home-text28">MyTutors</span>
                 <span class="home-text29">
                   <span>DeleteAccount</span>
                   <br />
@@ -362,7 +356,6 @@
               </div>
             </div>
           </div>
-            {% endif %}
         </div>
         <div class="home-container23">
           <footer class="home-footer">

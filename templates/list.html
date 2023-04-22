@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="container">
+    <div class="card">
+        <div class="card-header">
+            {{ type }}
+            <div class="btn-group float-right">
+                <button type="button" class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Action
+                </button>
+                <div class="dropdown-menu">
+{#                    <a class="dropdown-item" href="{{ url_for('form') }}">Write</a>#}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<section class="container">
+    <div class="card">
+            <div class="card-body">
+                <table class="table table-dark">
+                    <tr>
+
+                        {% for key, _ in fields[0].items() %}
+                        <th>{{ key }}</th>
+                        {% endfor %}
+                    </tr>
+                    {% for field in fields %}
+                    <tr>
+                        {% for key, value in field.items() %}
+                            {% if key == "name" %}
+                            <td><a href="{{ url_for('Routes.detail', title=field.name, description=field.summary)}}">{{ field.name }}</a></td>
+                            {% elif key != "summary"  or key != "profile_picture" %}
+                            <td>{{ value }}</td>
+                            {% endif %}
+                        {% endfor %}
+                        <td>
+                            <div class="btn-group show">
+                                <button type="button" class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="fas fa-bars"></i>
+                                </button>
+                                <div class="dropdown-menu">
+{#                                    <a class="dropdown-item" href="{{ url_for('form', uid=movie.uid) }}">Update</a>#}
+{#                                    <a class="dropdown-item" href="{{ url_for('delete', uid=movie.uid)}}">Delete</a>#}
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+    </div>
+</section>
+{% endblock content %}

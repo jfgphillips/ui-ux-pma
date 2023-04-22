@@ -44,7 +44,7 @@ class TokenManager:
     def get_tokens(cls, uid, user_type, is_fresh):
         additional_claims = {"user_type": user_type}
         access_token = create_access_token(identity=uid, fresh=is_fresh, additional_claims=additional_claims)
-        refresh_token = create_refresh_token(identity=uid)
+        refresh_token = create_refresh_token(identity=uid, additional_claims=additional_claims)
         return cls(access_token=access_token, refresh_token=refresh_token)
 
     @staticmethod
@@ -99,8 +99,10 @@ class AdminLogin(MethodView):
 
 @blp.route("/refresh")
 class TokenRefresh(MethodView):
+
+    @staticmethod
     @jwt_required(refresh=True)
-    def post(self):
+    def post():
         payload = get_jwt()
         id = payload["sub"]
         user_type = payload["user_type"]

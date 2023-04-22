@@ -13,8 +13,9 @@ blp = Blueprint("Students", __name__, description="Operations on students")
 
 @blp.route("/students")
 class StudentList(MethodView):
+    @staticmethod
     @blp.response(200, StudentSchema(many=True))
-    def get(self):
+    def get():
         return StudentModel.query.all()
 
     @blp.arguments(StudentSchema, location="form", content_type="form")
