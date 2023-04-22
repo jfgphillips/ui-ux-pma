@@ -5,12 +5,15 @@
     <div class="card">
         <div class="card-header">
             {{ name }}
-            <a class="btn btn-sm, btn-primary float-right" href="{{url_for('homepage')}}"> Go Back to homepage </a>
+            <a class="btn btn-sm, btn-primary float-right" href="{{url_for('Routes.homepage')}}"> Go Back to homepage </a>
         </div>
 
         <div class="card-body">
             {{ summary }}
         </div>
+        <div class="card-footer">
+        <a class="btn btn-sm btn-secondary float-left" href="{{url_for('Routes.homepage')}}">Home</a>
+        <a class="btn btn-sm btn-secondary float-right" href="{{url_for('Routes.list_fields', type=type)}}">Back to {{ type }}</a></div>
     </div>
 </section>
 {% endblock content %}

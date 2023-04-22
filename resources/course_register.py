@@ -15,6 +15,7 @@ class RegistersInCourse(MethodView):
     @blp.response(200, CourseRegisterSchema(many=True))
     def get(self, course_id):
         course = CourseModel.query.get_or_404(course_id)
+        print(course.registers)
         return course.registers.all()
 
     @blp.arguments(CourseRegisterSchema)
@@ -34,6 +35,27 @@ class RegistersInCourse(MethodView):
             abort(500, message=f"an error occured when saving course to db {e}")
 
         return course_register
+
+
+@blp.route("/students/<int:student_id>/course_registers")
+class RegistersInStudent(MethodView):
+    @staticmethod
+    @blp.response(200, CourseRegisterSchema(many=True))
+    def get(student_id):
+        student = StudentModel.query.get_or_404(student_id)
+        if not student:
+            abort(401, message="student not registered on a course")
+        return student.registers
+
+@blp.route("/tutors/<int:tutor_id>/course_registers")
+class RegistersInTutor(MethodView):
+    @staticmethod
+    @blp.response(200, CourseRegisterSchema(many=True))
+    def get(tutor_id):
+        tutor = TutorModel.query.get_or_404(tutor_id)
+        if not tutor.registers:
+            abort(401, message="tutors not registered on a course")
+        return tutor.registers
 
 
 @blp.route("/course_registers")

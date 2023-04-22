@@ -1,3 +1,5 @@
 .idea/*
 /TESTING/*
 __pycache__/*
+flask_website/*
+

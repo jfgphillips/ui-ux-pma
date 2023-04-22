@@ -29,7 +29,7 @@
                     <tr>
                         {% for key, value in field.items() %}
                             {% if key == "name" %}
-                            <td><a href="{{ url_for('Routes.detail', title=field.name, description=field.summary)}}">{{ field.name }}</a></td>
+                            <td><a href="{{ url_for('Routes.detail', name=field.name, summary=field.summary, type=type)}}">{{ field.name }}</a></td>
                             {% elif key != "summary"  or key != "profile_picture" %}
                             <td>{{ value }}</td>
                             {% endif %}
@@ -48,6 +48,9 @@
                     </tr>
                     {% endfor %}
                 </table>
+            </div>
+            <div class="card-footer">
+            <a class="btn btn-sm btn-secondary float-left" href="{{url_for('Routes.homepage')}}">Home</a>
             </div>
     </div>
 </section>
