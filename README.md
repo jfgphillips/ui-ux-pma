@@ -1,8 +1,9 @@
+# Welcome to this 11 + Tutoring Flask App
+
+
 In order to run this application please run the following command
 
-Run locally (Flask Config)
-
-1. Setup
+## 1. Setup
 1.1. create and activate virtualenvironment
 ```bash
 virtualenv .venv
@@ -14,8 +15,11 @@ source .venv/bin/activate
 pip install requirements.txt
 ```
 
-2 Run locally (one computer)
-a.
+
+
+## 2 Run locally (one computer)
+
+a. Run locally (default arguments)
 ```bash
 flask run
 ```
@@ -34,3 +38,4 @@ c.2 run flask app with -h parameter
 ```bash
 flask run -h xxx.xxx.xx.xx
 ```
+
