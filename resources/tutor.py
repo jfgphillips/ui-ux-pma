@@ -44,14 +44,20 @@ class TutorList(MethodView):
 
 @blp.route("/tutors/<int:tutor_id>")
 class Tutor(MethodView):
+    """
+    This class handles queries on students given a tutor ID
+    """
+
     @staticmethod
     @blp.response(200, TutorSchema)
     def get(tutor_id):
+        """used to retrieve a single tutor from the database"""
         tutor = TutorModel.query.get_or_404(tutor_id)
         return tutor
 
     @jwt_required()
     def delete(self, tutor_id):
+        """used to delete a tutor from the database"""
         jwt_payload = get_jwt()
         if jwt_payload["user_type"] == "admin" or jwt_payload["sub"] == tutor_id:
             tutor = TutorModel.query.get_or_404(tutor_id)
@@ -64,6 +70,7 @@ class Tutor(MethodView):
     @blp.arguments(TutorUpdateSchema)
     @blp.response(204, TutorSchema)
     def put(self, tutor_data, tutor_id):
+        """used to update tutor data from the database, if tutor isn't present, we create the tutor"""
         tutor = TutorModel.query.get(tutor_id)
         if tutor:
             for key, value in tutor_data.items():

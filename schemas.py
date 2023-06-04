@@ -60,10 +60,12 @@ class CourseRegisterSchema(PlainCourseRegisterSchema):
     students = fields.List(fields.Nested(PlainStudentSchema(), dump_only=True))
     tutors = fields.List(fields.Nested(PlainTutorSchema(), dump_only=True))
 
+
 class FileUploadSchema(Schema):
     user_type = fields.Str(required=True)
     uid = fields.Int(required=True)
     file = fields.Raw(type="file")
+
 
 class CourseRegisterAndStudentSchema(Schema):
     message = fields.Str()

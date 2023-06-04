@@ -13,10 +13,9 @@ blp = Blueprint("Utils", __name__, description="Utility operations")
 logger = logging.getLogger(__name__)
 
 
-
 def allowed_file(filename):
-    return '.' in filename and \
-           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+    return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
+
 
 @blp.route("/utils/file")
 class File(MethodView):
@@ -24,6 +23,7 @@ class File(MethodView):
     def post(self, file_data):
         upload_folder = None
         import pdb
+
         pdb.set_trace()
         file = file_data["profile_picture"]
         if file_data["user_type"] == "student":

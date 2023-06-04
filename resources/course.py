@@ -19,11 +19,13 @@ class CourseList(MethodView):
     @staticmethod
     @blp.response(200, CourseSchema(many=True))
     def get():
+        """return a list of courses present in the db"""
         return CourseModel.query.all()
 
     @blp.arguments(CourseSchema)
     @blp.response(201, CourseSchema)
     def post(self, course_data):
+        """create a course in the db"""
         course = CourseModel(**course_data)
         logger.warning(f"course: {course}")
         try:
@@ -41,11 +43,13 @@ class CourseList(MethodView):
 class Course(MethodView):
     @blp.response(200, CourseSchema)
     def get(self, course_id):
+        """given the id of a course db entry, retrieve the record"""
         course = CourseModel.query.get_or_404(course_id)
         return course
 
     @jwt_required()
     def delete(self, course_id):
+        """given the id of a course db entry, delete the record"""
         course = CourseModel.query.get_or_404(course_id)
         db.session.delete(course)
         db.session.commit()
@@ -54,6 +58,7 @@ class Course(MethodView):
     @blp.arguments(CourseUpdateSchema)
     @blp.response(200, CourseSchema)
     def put(self, course_data, course_id):
+        """update the data of a course db entry, if a course isn't present, create the course entry"""
         course = CourseModel.query.get(course_id)
         if course:
             for key, value in course_data.items():

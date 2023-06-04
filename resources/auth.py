@@ -25,23 +25,35 @@ from schemas import LoginSchema
 blp = Blueprint("Auth", "auth", description="Authorising a user")
 
 
-def get_tokens(id, user_type, is_fresh):
-    additional_claims = {"user_type": user_type}
-    access_token = create_access_token(identity=id, fresh=is_fresh, additional_claims=additional_claims)
-    refresh_token = create_refresh_token(identity=id)
-    response = make_response(redirect(url_for("Routes.homepage"), 302))
-    set_access_cookies(response, access_token)
-    set_refresh_cookies(response, refresh_token)
-    return access_token, refresh_token, response
+# def get_tokens(id, user_type, is_fresh):
+#     """Helper method in order to get jwt tokens and redirect url after authentication is complete"""
+#     additional_claims = {"user_type": user_type}
+#     access_token = create_access_token(identity=id, fresh=is_fresh, additional_claims=additional_claims)
+#     refresh_token = create_refresh_token(identity=id)
+#     response = make_response(redirect(url_for("Routes.homepage"), 302))
+#     set_access_cookies(response, access_token)
+#     set_refresh_cookies(response, refresh_token)
+#     return access_token, refresh_token, response
 
 
 @dataclass
 class TokenManager:
+    """A class used to manage the creation of jwt tokens and redirect url after authentication is complete"""
+
     access_token: str
     refresh_token: str
 
     @classmethod
     def get_tokens(cls, uid, user_type, is_fresh):
+        """
+        class method that returns a TokenManager instance
+        :param uid: the database ID of the user in question
+        :param user_type: one of `Tutor` `Student` `Admin`
+        :param is_fresh:
+            This field is fresh when a user signs in for the first time. upon usage of a refresh token this field
+            becomes False, for sensitive tasks we can require is_fresh as True
+        :return:
+        """
         additional_claims = {"user_type": user_type}
         access_token = create_access_token(identity=uid, fresh=is_fresh, additional_claims=additional_claims)
         refresh_token = create_refresh_token(identity=uid, additional_claims=additional_claims)
@@ -49,6 +61,7 @@ class TokenManager:
 
     @staticmethod
     def generate_response(access_token, refresh_token):
+        """Used to set jwt tokens in the cookies of a response (initiate an authenticated session)"""
         response = make_response(redirect(url_for("Routes.homepage"), 302))
         set_access_cookies(response, access_token)
         set_refresh_cookies(response, refresh_token)
@@ -56,6 +69,7 @@ class TokenManager:
 
     @staticmethod
     def unset_jwt():
+        """Used to log a user out of their session"""
         response = make_response(redirect(url_for("Routes.homepage"), 302))
         unset_jwt_cookies(response)
         return response
@@ -63,6 +77,8 @@ class TokenManager:
 
 @blp.route("/students/login")
 class StudentLogin(MethodView):
+    """handles student login"""
+
     @blp.arguments(LoginSchema, location="form", content_type="form")
     def post(self, login_data):
         student = StudentModel.query.filter(StudentModel.username == login_data["username"]).first()
@@ -75,6 +91,8 @@ class StudentLogin(MethodView):
 
 @blp.route("/tutors/login")
 class TutorLogin(MethodView):
+    """handles tutor login"""
+
     @blp.arguments(LoginSchema, location="form", content_type="form")
     def post(self, login_data):
         tutor = TutorModel.query.filter(TutorModel.username == login_data["username"]).first()
@@ -99,10 +117,12 @@ class AdminLogin(MethodView):
 
 @blp.route("/refresh")
 class TokenRefresh(MethodView):
+    """Handles the token refreshing operation"""
 
     @staticmethod
     @jwt_required(refresh=True)
     def post():
+        """generates new tokens and sets is_fresh to false"""
         payload = get_jwt()
         id = payload["sub"]
         user_type = payload["user_type"]
@@ -115,6 +135,9 @@ class TokenRefresh(MethodView):
 class Logout(MethodView):
     @jwt_required(locations=["cookies"])
     def post(self):
+        """
+        logs a user out of their account and adds their tokens to a BLOCKLIST such that they cannot be
+        used by a malicious actor"""
         jti = get_jwt()["jti"]
         BLOCKLIST.add(jti)
         return {"message": "Successfully logged out"}, 200
