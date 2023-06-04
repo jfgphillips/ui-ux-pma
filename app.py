@@ -36,7 +36,7 @@ def create_app(db_url=None):
     app.config["OPENAPI_SWAGGER_UI_URL"] = "https://cdn.jsdelivr.net/npm/swagger-ui-dist/"
     app.config["SQLALCHEMY_DATABASE_URI"] = db_url or os.getenv("DATABASE_URL", "sqlite:///data.db")
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-    app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+    app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
     db.init_app(app)
     migrate = Migrate(app, db)
     api = Api(app)
@@ -110,9 +110,9 @@ def create_app(db_url=None):
             return response
 
     api.register_blueprint(CourseBlueprint)
-    api.register_blueprint(CourseRegisterBlueprint)
     api.register_blueprint(StudentBlueprint)
     api.register_blueprint(TutorBlueprint)
+    api.register_blueprint(CourseRegisterBlueprint)
     api.register_blueprint(AuthBlueprint)
     api.register_blueprint(RoutesBlueprint)
 
@@ -121,5 +121,4 @@ def create_app(db_url=None):
 
 if __name__ == "__main__":
     app = create_app()
-    app.run(debug=True, host= "192.168.50.14")
-
+    app.run(debug=True, host="192.168.50.14", port=5001)
