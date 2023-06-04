@@ -114,12 +114,6 @@ def homepage():
 
     return render_template("homepage.html", user=user, tutors=tutors, events=events, students=students, courses=courses)
 
-
-@blp.route("/")
-def root():
-    return redirect(url_for("Routes.homepage"))
-
-
 @blp.route("/user_info")
 def user_info():
     """Renders the users information such that a user can login, if not logged in it redirects to the login form."""
@@ -202,7 +196,7 @@ def list_fields(type):
 @blp.route("/detail", methods=["GET", "POST"])
 def detail():
     args = request.args
-    return render_template("detail.html", name=args["name"], summary=args["summary"], type=args["type"])
+    return render_template("detail.html", name=args["name"], summary=args.get("summary"), type=args["type"])
 
 
 @blp.post("/handle_signup")
@@ -213,23 +207,16 @@ def handle_signup():
     file_upload = None
     user_type = request.form["user_type"]
     print(request.files)
-    payload = _convert_form_to_json_payload(request.form, ["user_type"])
+    payload = _convert_form_to_json_payload(request.form, ["user_type", "profile_picture"])
     file_payload = {"profile_picture": request.files, "user_type": user_type}
 
     if user_type == "student":
         response = requests.post(f"{request.url_root}{url_for('Students.StudentList')}", data=payload)
-        if response.status_code == 201:
-            file_payload["uid"] = response.json()["id"]
-            file_upload = File.post(file_payload)
-            print(file_upload)
 
     elif user_type == "tutor":
         response = requests.post(f"{request.url_root}{url_for('Tutors.TutorList')}", data=payload)
-        if response.status_code == 201:
-            file_payload["uid"] = response.json()["id"]
-            file_upload = File.post(file_payload)
 
-    if response and response.status_code == 201 and file_upload and file_upload.status_code == 201:
+    if response and response.status_code == 201:
         return redirect(url_for("Routes.login"))
 
     return render_template("register_form.html")
@@ -371,5 +358,5 @@ def my_courses():
 def delete_account():
     """Used to delete account"""
     raise NotImplementedError(
-        "Deletion of accounts is not supported yet, to do this use the API methods" "in the swagger UI or postman"
+        "Deletion of accounts is not supported yet, to do this use the API methods in the swagger UI or postman"
     )
