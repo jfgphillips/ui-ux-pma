@@ -210,7 +210,7 @@ def list_fields(type):
 def detail():
     """Used on click to display summary information on a user"""
     args = request.args
-    return render_template("detail.html", name=args["name"], summary=args["summary"], type=args["type"])
+    return render_template("detail.html", name=args["name"], summary=args.get("summary"), type=args["type"])
 
 
 @blp.get("/my_people")
