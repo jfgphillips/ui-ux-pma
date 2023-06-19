@@ -54,7 +54,6 @@ def test_register_students_and_tutors_in_course(populate_db_with_stub_data, clie
     In order to check the validity of this test we need to manipulate the raw student and tutor data to remove the
     password field. This is desired as we should not ever provide a password in the json response of a call to
     get course registers.
-
     """
     expected_student_entry = populate_db_with_stub_data.student.copy()
     expected_student_entry.pop("password")
@@ -78,3 +77,61 @@ def test_register_students_and_tutors_in_course(populate_db_with_stub_data, clie
         "id": populate_db_with_stub_data.register["id"],
     }
     assert course_register_entity == expected_course_register_entity
+
+
+def test_get_registers_in_course(populate_db_with_stub_data, client):
+    course_id = populate_db_with_stub_data.course["id"]
+    response = client.get(f"courses/{course_id}/course_registers")
+    expected_course_data = populate_db_with_stub_data.course.copy()
+
+    assert response.status_code == 200
+    assert response.json[0]["course"] == expected_course_data
+
+
+def test_roundtrip_subscribe_unsubscribe_student(populate_db_with_stub_data, client):
+    student_id = populate_db_with_stub_data.student["id"]
+    course_register_id = populate_db_with_stub_data.register["id"]
+    empty_response = client.get(f"students/{student_id}/course_registers")
+    assert len(empty_response.json) == 0
+
+    successful_response = client.post(f"students/{student_id}/course_registers/{course_register_id}")
+    assert successful_response.status_code == 201
+
+    populated_response = client.get(f"students/{student_id}/course_registers")
+    assert len(populated_response.json) == 1
+    assert populated_response.json[0]["id"] == course_register_id
+
+    delete_response = client.delete(f"students/{student_id}/course_registers/{course_register_id}")
+    assert delete_response.status_code == 200
+
+    empty_response_after_delete = client.get(f"students/{student_id}/course_registers")
+    assert len(empty_response_after_delete.json) == 0
+
+
+def test_roundtrip_subscribe_unsubscribe_tutor_bug(populate_db_with_stub_data, client):
+    """
+    This test roundrips a tutor. There is one inconsistency and one error in this test:
+    Inconsistency
+    1. The get method raises 401 instead of returning an empty list of registers from the query.
+    error:
+    1. A typo in the unsubscribe method (delete request) queries the `StudentModel` as opposed to the
+       `TutorModel`. This causes an empty list to be returned and thus the tutor.registers.remove(course_register)
+       operation raises a ValueError
+
+    Actions:
+    look to standardise the api; choose beteween raising an error and returning an empty list
+    fix the `delete` endpoint to query the right model
+    """
+    tutor_id = populate_db_with_stub_data.tutor["id"]
+    course_register_id = populate_db_with_stub_data.register["id"]
+    empty_response = client.get(f"tutors/{tutor_id}/course_registers")
+    assert empty_response.status_code == 401
+
+    successful_response = client.post(f"tutors/{tutor_id}/course_registers/{course_register_id}")
+    assert successful_response.status_code == 201
+
+    populated_response = client.get(f"tutors/{tutor_id}/course_registers")
+    assert len(populated_response.json) == 1
+    assert populated_response.json[0]["id"] == course_register_id
+    with pytest.raises(ValueError):
+        client.delete(f"tutors/{tutor_id}/course_registers/{course_register_id}")

@@ -24,6 +24,7 @@ def stub_tutor_data(app):
         db.session.commit()
     return student_data
 
+
 def test_student_delete_error(stub_tutor_data, client, app):
     """
     This test aims to assure that the logic used to ensure the caller is permissioned to delete an account functions
@@ -134,7 +135,6 @@ def test_student_create_errors_inconsistencies_bug(bad_data, status_code, stub_t
 
     students_response = client.get("/students").json
     assert len(students_response) == 1
-
 
 
 def test_student_update_constraint_error_bug(stub_tutor_data, client):

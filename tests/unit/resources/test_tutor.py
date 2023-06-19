@@ -24,6 +24,7 @@ def stub_tutor_data(app):
         db.session.commit()
     return tutor_data
 
+
 def test_student_delete_error(stub_tutor_data, client, app):
     """
     see tests/unit/resources.test_student.py::test_student_delete_error for explanation
@@ -49,9 +50,7 @@ def test_tutor_delete_success(stub_tutor_data, client, app):
     see tests/unit/resources.test_student.py::test_tutor_delete_success for explanation
     """
     tutor_id = stub_tutor_data["id"]
-    good_response = client.delete(
-        f"/tutors/{tutor_id}", headers=get_tutor_authed_header(tutor_id=tutor_id, app=app)
-    )
+    good_response = client.delete(f"/tutors/{tutor_id}", headers=get_tutor_authed_header(tutor_id=tutor_id, app=app))
     assert good_response.status_code == 200
     tutor_response = client.get(f"/tutors/{tutor_id}")
     assert tutor_response.status_code == 404
@@ -107,7 +106,6 @@ def test_tutor_create_errors_inconsistencies_bug(bad_data, status_code, stub_tut
 
     students_response = client.get("/tutors").json
     assert len(students_response) == 1
-
 
 
 def test_tutor_update_constraint_error_bug(stub_tutor_data, client):
