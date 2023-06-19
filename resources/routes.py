@@ -153,6 +153,7 @@ def signup():
 
     return render_template("register_form.html")
 
+
 @blp.post("/handle_signup")
 def handle_signup():
     """Handles the response from a register form and actions the appropriate endpoints, if the signup responds with a
