@@ -17,7 +17,7 @@ jobs:
           python-version: "3.10"
 
       - name: Install black and mypy
-        run: pip install black mypy
+        run: pip install black mypy if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
       - name: Check Black
         run: black -l 120 --diff --check .
