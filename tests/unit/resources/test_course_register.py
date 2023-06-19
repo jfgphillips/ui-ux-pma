@@ -168,6 +168,7 @@ def test_create_course_register_error(data, client):
 
 
 def test_create_course_register(client):
+    """this test creates a course and a course_register for that course in the database"""
     course_data = {"name": "English", "subject_type": "11+ exam"}
     create_course_response = client.post("/courses", json=course_data)
     assert create_course_response.status_code == 201
@@ -182,3 +183,53 @@ def test_create_course_register(client):
     course_registers_response = client.get(f"course_registers/{course_register_id}")
     assert course_registers_response.status_code == 200
     assert course_registers_response.json["course"]["id"] == course_id
+
+
+def test_create_course_register_with_duplicate_course(populate_db_with_stub_data, client):
+    """This test makes sure it is not possible for us to create two course_registers for the same course"""
+    course_id = populate_db_with_stub_data.course["id"]
+    duplicated_course_register_data = populate_db_with_stub_data.register.copy()
+    duplicated_course_register_data.pop("id")
+    response = client.post(f"courses/{course_id}/course_registers", json=duplicated_course_register_data)
+    assert response.status_code == 400
+
+    course_registers_response = client.get("/course_registers")
+    assert len(course_registers_response.json) == 1
+
+
+def test_delete_course_failed_with_student(populate_db_with_stub_data, client, admin_authed_header):
+    student_id = populate_db_with_stub_data.student["id"]
+    course_register_id = populate_db_with_stub_data.register["id"]
+    subscribe_student_response = client.post(f"/students/{student_id}/course_registers/{course_register_id}")
+    assert subscribe_student_response.status_code == 201
+
+    delete_course_register_response = client.delete(
+        f"course_registers/{course_register_id}", headers=admin_authed_header
+    )
+    assert delete_course_register_response.status_code == 400
+
+    course_registers_response = client.get(f"/course_registers/{course_register_id}")
+    assert course_registers_response.status_code == 200
+    assert course_registers_response.json == subscribe_student_response.json
+
+
+def test_delete_course_failed_with_tutor_bug(populate_db_with_stub_data, client, admin_authed_header):
+    """
+    The following test shows a bug where a course register can be deleted with tutors still enrolled
+
+    Actions:
+    standardise the course_register delete method such that it checks for the presence of tutors and students before
+    allowing the deletion of the course_register
+    """
+    tutor_id = populate_db_with_stub_data.tutor["id"]
+    course_register_id = populate_db_with_stub_data.register["id"]
+    subscribe_student_response = client.post(f"/tutors/{tutor_id}/course_registers/{course_register_id}")
+    assert subscribe_student_response.status_code == 201
+
+    delete_course_register_response = client.delete(
+        f"course_registers/{course_register_id}", headers=admin_authed_header
+    )
+    assert delete_course_register_response.status_code == 200
+
+    course_registers_response = client.get(f"/course_registers/{course_register_id}")
+    assert course_registers_response.status_code == 404
