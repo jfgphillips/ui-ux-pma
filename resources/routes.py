@@ -1,5 +1,6 @@
 import json
 import logging
+from typing import Optional
 
 import requests
 from flask import request, url_for, redirect, render_template, session
@@ -94,27 +95,6 @@ def handle_login():
     return redirect(url_for("Routes.login"))
 
 
-@blp.route("/homepage")
-def homepage():
-    user = None
-    jwt = verify_jwt_in_request(optional=True)
-    if jwt:
-        payload = get_jwt()
-        id = payload["sub"]
-        if payload["user_type"] == "tutor":
-            user = Tutor.get(id).json
-
-        elif payload["user_type"] == "student":
-            user = Student.get(id).json
-
-    tutors = TutorList.get().json
-    courses = CourseList.get().json
-    students = StudentList.get().json
-    events = CourseRegisterList.get().json
-
-    return render_template("homepage.html", user=user, tutors=tutors, events=events, students=students, courses=courses)
-
-
 @blp.route("/user_info")
 def user_info():
     """Renders the users information such that a user can login, if not logged in it redirects to the login form."""
@@ -134,7 +114,8 @@ def user_info():
     return render_template("login_form.html")
 
 
-def _convert_form_to_json_payload(form: dict, exclude: list = None):
+def _convert_form_to_json_payload(form: dict, exclude: Optional[list] = None):
+    """Helper method to convert form to a raw json data payload"""
     as_dict = dict(form)
     if exclude:
         for item in exclude:
@@ -172,34 +153,6 @@ def signup():
 
     return render_template("register_form.html")
 
-
-@blp.route("/list_fields/<string:type>", methods=["GET", "POST"])
-def list_fields(type):
-    fields = None
-    if type == "tutor":
-        fields = TutorList.get().json
-
-    elif type == "course":
-        fields = CourseList.get().json
-
-    elif type == "student":
-        fields = StudentList.get().json
-
-    else:
-        fields = CourseRegisterList.get().json
-
-    if fields is None:
-        redirect(url_for("Routes.homepage"))
-
-    return render_template("list.html", fields=fields, type=type)
-
-
-@blp.route("/detail", methods=["GET", "POST"])
-def detail():
-    args = request.args
-    return render_template("detail.html", name=args["name"], summary=args.get("summary"), type=args["type"])
-
-
 @blp.post("/handle_signup")
 def handle_signup():
     """Handles the response from a register form and actions the appropriate endpoints, if the signup responds with a
@@ -221,27 +174,6 @@ def handle_signup():
         return redirect(url_for("Routes.login"))
 
     return render_template("register_form.html")
-
-
-@blp.route("/logout")
-@jwt_required(locations=["cookies"])
-def logout():
-    """Protected, actions the deauthed response from a logout request"""
-    requests.post(f"{request.url_root}{url_for('Auth.Logout')}")
-    deauthed_response = TokenManager.unset_jwt()
-
-    return deauthed_response
-
-
-def _convert_form_to_json_payload(form: dict, exclude: list = None):
-    """Helper method to convert form to a raw json data payload"""
-    as_dict = dict(form)
-    if exclude:
-        for item in exclude:
-            as_dict.pop(item)
-        return as_dict
-
-    return as_dict
 
 
 @blp.route("/list_fields/<string:type>", methods=["GET", "POST"])
