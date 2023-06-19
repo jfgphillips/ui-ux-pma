@@ -143,6 +143,7 @@ def test_student_schema_raises_nested_validation_errors():
     ],
 )
 def test_student_schema_valid_file(filepath):
+    os.chdir(os.getcwd())
     with open(filepath, "r") as f:
         data = {
             "name": "john Phillips",
