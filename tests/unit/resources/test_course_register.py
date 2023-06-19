@@ -1,6 +1,7 @@
 from collections import namedtuple
 
 import pytest
+from sqlalchemy.exc import IntegrityError
 
 from db import db
 from models import CourseModel, CourseRegisterModel, StudentModel, TutorModel
@@ -135,3 +136,49 @@ def test_roundtrip_subscribe_unsubscribe_tutor_bug(populate_db_with_stub_data, c
     assert populated_response.json[0]["id"] == course_register_id
     with pytest.raises(ValueError):
         client.delete(f"tutors/{tutor_id}/course_registers/{course_register_id}")
+
+
+@pytest.mark.parametrize(
+    "data",
+    [
+        (
+            {
+                "name": "this is a course",
+                "course_id": 2,
+            }
+        ),
+        (
+            {
+                "name": "this is a course",
+            }
+        ),
+    ],
+    ids=["course doesnt exist in the `CourseModel`", "no course id provided"],
+)
+def test_create_course_register_error(data, client):
+    """
+    This test checks that the `CourseRegisterModel` successfully raises errors for invalid data
+
+    Actions:
+    These errors are handled at the `db.session.commit()` stage; Some additional validation can be done
+    at a higher level to prevent hitting a sqlalchemy exception.
+    """
+    response = client.post("/course_registers", json=data)
+    assert response.status_code == 400
+
+
+def test_create_course_register(client):
+    course_data = {"name": "English", "subject_type": "11+ exam"}
+    create_course_response = client.post("/courses", json=course_data)
+    assert create_course_response.status_code == 201
+    course_id = create_course_response.json["id"]
+    course_register_data = {
+        "name": "this is a course",
+        "course_id": course_id,
+    }
+    create_course_register_response = client.post("course_registers", json=course_register_data)
+    assert create_course_register_response.status_code == 201
+    course_register_id = create_course_register_response.json["id"]
+    course_registers_response = client.get(f"course_registers/{course_register_id}")
+    assert course_registers_response.status_code == 200
+    assert course_registers_response.json["course"]["id"] == course_id
