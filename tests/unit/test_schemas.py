@@ -132,6 +132,7 @@ def test_student_schema_raises_nested_validation_errors():
     with pytest.raises(ValidationError):
         schemas.StudentSchema().load(data=data)
 
+
 @pytest.mark.skip(reason="get coverage to work")
 @pytest.mark.parametrize(
     "filepath",
