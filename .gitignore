@@ -3,3 +3,7 @@
 __pycache__/*
 flask_website/*
 
+models/__pycache__/*
+resources/__pycache__/*
+
+

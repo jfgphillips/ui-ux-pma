@@ -1,0 +1,26 @@
+name: Python Code Quality Checks
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v3
+        with:
+          python-version: "3.10"
+
+      - name: Install black and mypy
+        run: pip install black mypy
+
+      - name: Check Black
+        run: black -l 120 --diff --check .
+
+      - name: Check mypy
+        run: mypy .

@@ -114,6 +114,7 @@ def homepage():
 
     return render_template("homepage.html", user=user, tutors=tutors, events=events, students=students, courses=courses)
 
+
 @blp.route("/user_info")
 def user_info():
     """Renders the users information such that a user can login, if not logged in it redirects to the login form."""
