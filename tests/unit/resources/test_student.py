@@ -7,7 +7,7 @@ from tests.client_headers import get_student_authed_header
 
 
 @pytest.fixture(scope="function")
-def stub_student_data(app):
+def stub_tutor_data(app):
     student_data = {
         "name": "john Phillips",
         "age": 11,
@@ -24,7 +24,7 @@ def stub_student_data(app):
         db.session.commit()
     return student_data
 
-def test_student_delete_error(stub_student_data, client, app):
+def test_student_delete_error(stub_tutor_data, client, app):
     """
     This test aims to assure that the logic used to ensure the caller is permissioned to delete an account functions
     as expected. The flow runs as follows
@@ -32,11 +32,11 @@ def test_student_delete_error(stub_student_data, client, app):
     2. assert we get a bad response (401)
     3. sanity check that we still have the student in the database
     """
-    expected_student_data = stub_student_data.copy()
+    expected_student_data = stub_tutor_data.copy()
     expected_student_data.pop("password")
     expected_student_data["registers"] = []
 
-    student_id = stub_student_data["id"]
+    student_id = stub_tutor_data["id"]
     different_student_id = 2
     assert different_student_id != student_id
     bad_response = client.delete(
@@ -48,13 +48,13 @@ def test_student_delete_error(stub_student_data, client, app):
     assert students_response.json == expected_student_data
 
 
-def test_student_delete_success(stub_student_data, client, app):
+def test_student_delete_success(stub_tutor_data, client, app):
     """
     This test aims to check that the student containing the correct credentials can delete their account.
     We can sanity check this operation by requesting the deleted students data and getting a 404 error indicating there
     is no entity.
     """
-    student_id = stub_student_data["id"]
+    student_id = stub_tutor_data["id"]
     good_response = client.delete(
         f"/students/{student_id}", headers=get_student_authed_header(student_id=student_id, app=app)
     )
@@ -104,7 +104,7 @@ def test_student_delete_success(stub_student_data, client, app):
     ],
     ids=["sql integrity error", "marshmallow schema error", "unique username error"],
 )
-def test_student_create_errors_inconsistencies_bug(bad_data, status_code, stub_student_data, client):
+def test_student_create_errors_inconsistencies_bug(bad_data, status_code, stub_tutor_data, client):
     """
     This test shows the inconsistencies between the different validation steps of the students post method which causes
     different `response.status_code`'s to be returned.
@@ -137,7 +137,7 @@ def test_student_create_errors_inconsistencies_bug(bad_data, status_code, stub_s
 
 
 
-def test_student_update_constraint_error_bug(stub_student_data, client):
+def test_student_update_constraint_error_bug(stub_tutor_data, client):
     """
     This test will does create a student as stated by the docstring. There are two reasons for this
     1. StudentUpdateSchema prevents passing username and password to the put method
