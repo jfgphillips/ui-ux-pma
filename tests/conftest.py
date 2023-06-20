@@ -1,3 +1,5 @@
+import multiprocessing
+
 import pytest
 from flask_jwt_extended import create_access_token
 
@@ -17,6 +19,7 @@ def app():
             "TESTING": True,
         }
     )
+    multiprocessing.set_start_method("fork")
 
     with app.app_context():
         db.create_all()
