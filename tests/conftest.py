@@ -5,9 +5,13 @@ from flask_jwt_extended import create_access_token
 
 from app import create_app
 import testing.postgresql
-from sqlalchemy import create_engine
 
 from db import db
+
+@pytest.fixture(scope="session", autouse=True)
+def configure_testing_suite():
+    # https://github.com/pytest-dev/pytest-flask/issues/104
+    multiprocessing.set_start_method("fork")
 
 
 @pytest.fixture(scope="function")
@@ -19,7 +23,6 @@ def app():
             "TESTING": True,
         }
     )
-    multiprocessing.set_start_method("fork")
 
     with app.app_context():
         db.create_all()
