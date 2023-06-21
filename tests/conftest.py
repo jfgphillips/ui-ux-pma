@@ -1,3 +1,4 @@
+import multiprocessing
 from collections import namedtuple
 
 import pytest
@@ -5,8 +6,15 @@ import testing.postgresql
 from flask_jwt_extended import create_access_token
 
 from app import create_app
+import testing.postgresql
+
 from db import db
 from models import CourseModel, CourseRegisterModel, StudentModel, TutorModel
+
+@pytest.fixture(scope="session", autouse=True)
+def configure_testing_suite():
+    # https://github.com/pytest-dev/pytest-flask/issues/104
+    multiprocessing.set_start_method("fork")
 
 
 @pytest.fixture(scope="function")
