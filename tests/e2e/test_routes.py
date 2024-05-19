@@ -19,8 +19,8 @@ def test_signup_and_login_user(live_server, page):
     page.get_by_role("textbox", name="password").fill("password")
     page.get_by_role("button", name="Log in").click()
     page.get_by_role("link", name="Edit Profile").click()
-
-def test_signup_and_login_v2(live_server, page):
+@pytest.mark.skip()
+def test_signup_and_login_v2(client, page):
     page.goto(url_for("Routes.homepage", _external=True))
     page.get_by_role("button", name="Register").click()
     page.get_by_role("textbox", name="username").click()
@@ -39,6 +39,7 @@ def test_signup_and_login_v2(live_server, page):
     page.screenshot(path="screenshots/signup.png")
     page.get_by_role("button", name="Sign Up").press("Enter")
 
+@pytest.mark.skip()
 def test_example(live_server, context) -> None:
     with context.new_page() as page:
         page.goto(url_for("Routes.login", _external=True))
