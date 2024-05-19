@@ -8,6 +8,7 @@ from models import TutorModel
 
 @pytest.fixture(scope="function")
 def stub_tutor_data(app):
+    """this fixture populates the testing database with dummy tutor data"""
     tutor_data = {
         "name": "john Phillips",
         "age": 11,

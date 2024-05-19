@@ -2,50 +2,7 @@ from collections import namedtuple
 
 import pytest
 
-from db import db
-from models import CourseModel, CourseRegisterModel, StudentModel, TutorModel
-
 StubData = namedtuple("StubData", "course register student tutor")
-
-
-@pytest.fixture(scope="function")
-def populate_db_with_stub_data(app):
-    course_data = {"name": "English", "subject_type": "11+ exam", "id": 1, "summary": None, "test_providers": None}
-    student_data = {
-        "name": "john Phillips",
-        "age": 11,
-        "email": "jfgp111@gmail.com",
-        "username": "jphill111",
-        "password": "student_password",
-        "summary": "Looking for a tutor",
-        "id": 1,
-        "profile_picture": None,
-    }
-    tutor_data = {
-        "name": "john Phillips",
-        "age": 11,
-        "email": "jfgp111@gmail.com",
-        "username": "jphill111",
-        "password": "tutor_password",
-        "summary": "I am a tutor",
-        "id": 1,
-        "profile_picture": None,
-    }
-
-    course_register_data = {"name": "my first course", "course_id": 1, "id": 1}
-
-    course = CourseModel(**course_data)
-    student = StudentModel(**student_data)
-    tutor = TutorModel(**tutor_data)
-    register = CourseRegisterModel(**course_register_data)
-    with app.app_context():
-        db.session.add(course)
-        db.session.add(register)
-        db.session.add(student)
-        db.session.add(tutor)
-        db.session.commit()
-
-    return StubData(course=course_data, register=course_register_data, student=student_data, tutor=tutor_data)
 
 
 def test_register_students_and_tutors_in_course(populate_db_with_stub_data, client):
@@ -80,6 +37,11 @@ def test_register_students_and_tutors_in_course(populate_db_with_stub_data, clie
 
 
 def test_get_registers_in_course(populate_db_with_stub_data, client):
+    """
+    This test checks that stub data can be used to access the courses endpoint
+    we are expecting that the expected data from the api request for course_registers endpoint
+    matches that from the raw data used to populate the database
+    """
     course_id = populate_db_with_stub_data.course["id"]
     response = client.get(f"courses/{course_id}/course_registers")
     expected_course_data = populate_db_with_stub_data.course.copy()
@@ -89,6 +51,16 @@ def test_get_registers_in_course(populate_db_with_stub_data, client):
 
 
 def test_roundtrip_subscribe_unsubscribe_student(populate_db_with_stub_data, client):
+    """This test aims to roundtrip the flow of a student subscribing and unsubscribing from a course
+    The flow proceeds as follows
+    1. access the student id from the stub data
+    2. ensure that the student is not registered on any courses
+    3. register the student on a course
+    4. ensure the student is registered on one course
+    5. ensure that the course that student registerd on in the database matches the one we submitted
+    6. delete the student from that course
+    7. ensure that the student is no longer registered on any courses
+    """
     student_id = populate_db_with_stub_data.student["id"]
     course_register_id = populate_db_with_stub_data.register["id"]
     empty_response = client.get(f"students/{student_id}/course_registers")
@@ -184,6 +156,43 @@ def test_create_course_register(client):
     assert course_registers_response.json["course"]["id"] == course_id
 
 
+def test_roundtrip_course_register(client, admin_authed_header):
+    """
+    This test looks to create a course, and a course register using the course ID. This test follows the pattern:
+    1. create a course entity with a post to /courses
+    2. extract course_id from the response.json
+    3. use the course_id to create a `course_register` associated to the previously created course
+    4. check that the course data is populated correctly
+    5. authorise the client and delete the course_register entity
+    6. assert course is correctly deleted
+
+    """
+    create_course_response = client.post("/courses", json={"name": "English", "subject_type": "11+ exam"})
+    assert create_course_response.status_code == 201
+    course_id = create_course_response.json["id"]
+
+    create_course_register_response = client.post(f"/courses/{course_id}/course_registers", json={"name": "my_course"})
+    assert create_course_register_response.status_code == 201
+    current_course_registers = client.get("/course_registers").json
+    assert len(current_course_registers) == 1
+
+    course_register_id = current_course_registers[0]["id"]
+
+    expected_course_data = create_course_response.json
+    expected_course_data.pop("registers")
+
+    assert len(current_course_registers) == 1
+    assert current_course_registers[0]["course"] == expected_course_data
+
+    delete_course_register_response = client.delete(
+        f"/course_registers/{course_register_id}", headers=admin_authed_header
+    )
+    assert delete_course_register_response.status_code == 200
+
+    course_registers_after_delete = client.get("/course_registers").json
+    assert len(course_registers_after_delete) == 0
+
+
 def test_create_course_register_with_duplicate_course(populate_db_with_stub_data, client):
     """This test makes sure it is not possible for us to create two course_registers for the same course"""
     course_id = populate_db_with_stub_data.course["id"]
@@ -197,6 +206,7 @@ def test_create_course_register_with_duplicate_course(populate_db_with_stub_data
 
 
 def test_delete_course_failed_with_student(populate_db_with_stub_data, client, admin_authed_header):
+    """This test checks that course regiseters cannot be deleted (even by admin) whilst students are registered on it"""
     student_id = populate_db_with_stub_data.student["id"]
     course_register_id = populate_db_with_stub_data.register["id"]
     subscribe_student_response = client.post(f"/students/{student_id}/course_registers/{course_register_id}")
