@@ -43,7 +43,7 @@ jobs:
       run: |
         coverage run -m pytest
         coverage report --format=markdown --omit="tests/*" > coverage_table.md
-        coverage html
+        coverage html --omit="tests/*"
 
     - name: Upload Coverage
       uses: actions/upload-artifact@v3
