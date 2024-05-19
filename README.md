@@ -39,3 +39,16 @@ c.2 run flask app with -h parameter
 flask run -h xxx.xxx.xx.xx
 ```
 
+
+## 3 Run with docker file
+
+Build the docker image + run the docker container
+```bash
+docker build . -t flask-app
+docker run -p 80:80 flask-app
+```
+
+url
+- http://127.0.0.1/homepage
+
+
