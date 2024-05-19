@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 
 import pytest
 from marshmallow import ValidationError
@@ -143,8 +144,8 @@ def test_student_schema_raises_nested_validation_errors():
     ],
 )
 def test_student_schema_valid_file(filepath):
-    os.chdir(os.getcwd())
-    with open(filepath, "r") as f:
+    test_dir = Path(__file__).parent
+    with open(test_dir / filepath, "r") as f:
         data = {
             "name": "john Phillips",
             "age": 11,
