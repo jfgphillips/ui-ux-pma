@@ -74,10 +74,10 @@ def test_create_update_delete_roundtrip(
 
     `status_codes` are standardised across the endpoints showing http request contracts have been standardised
 
-    The `delete` endpoints are protected using @jwt_required where `/students` and `/tutors` require `user_type` to equal
-    `admin` or match the `id` of the calling client deleting their account. This is an issue if e.g. a student can access
-    the jwt protected tutor endpoint where the id matches an existing tutor id. Here a student is able to delete a tutor
-    account that is not theirs.
+    The `delete` endpoints are protected using @jwt_required where `/students` and `/tutors` require `user_type` to
+    equal `admin` or match the `id` of the calling client deleting their account. This is an issue if e.g. a student can
+    access the jwt protected tutor endpoint where the id matches an existing tutor id. Here a student is able to delete
+    a tutor account that is not theirs.
     For a reproducible example see `test_delete_identity_bug`
 
     Though the `/courses` endpoint is protected, it is not selective as to which users are allows to perform this action
@@ -139,7 +139,9 @@ def test_delete_identity_bug(client, app):
     @jwt_required()
     def delete(self, student_id):
         jwt_payload = get_jwt()
-        if jwt_payload["user_type"] == "admin" or (jwt_payload["sub"] == student_id and jwt_payload["user_type"] == "student"):
+        if jwt_payload["user_type"] == "admin" or (
+            jwt_payload["sub"] == student_id and jwt_payload["user_type"] == "student"
+        ):
             student = StudentModel.query.get_or_404(student_id)
             db.session.delete(student)
             db.session.commit()

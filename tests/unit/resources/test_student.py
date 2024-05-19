@@ -1,9 +1,9 @@
 import pytest
 from sqlalchemy.exc import IntegrityError
+from tests.client_headers import get_student_authed_header
 
 from db import db
 from models import StudentModel
-from tests.client_headers import get_student_authed_header
 
 
 @pytest.fixture(scope="function")
@@ -29,7 +29,8 @@ def test_student_delete_error(stub_tutor_data, client, app):
     """
     This test aims to assure that the logic used to ensure the caller is permissioned to delete an account functions
     as expected. The flow runs as follows
-    1. with a populated db containing a student make a delete request to the students endpoint using a different student id
+    1. with a populated db containing a student make a delete request to the students endpoint using a different
+       student id
     2. assert we get a bad response (401)
     3. sanity check that we still have the student in the database
     """
@@ -149,9 +150,9 @@ def test_student_update_constraint_error_bug(stub_tutor_data, client):
     client wants to update their password and username. Constraints must be implemented here to check that the
     username is not already taken by another user.
 
-    A better error messages should be used when passing incomplete student data as opposed to the existing integrity error
-    that is raised upon db.session.commit() in order not to break the python script. This should allow for a graceful
-    blow up.
+    A better error messages should be used when passing incomplete student data as opposed to the existing integrity
+    error that is raised upon db.session.commit() in order not to break the python script. This should allow for a
+    graceful blow up.
     """
     bad_data = {
         "name": "john Phillips",
