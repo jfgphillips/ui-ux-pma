@@ -1,4 +1,3 @@
-import os
 from pathlib import Path
 
 import pytest
@@ -145,14 +144,14 @@ def test_student_schema_raises_nested_validation_errors():
 )
 def test_student_schema_valid_file(filepath):
     test_dir = Path(__file__).parent
-    with open(test_dir / filepath, "r") as f:
+    with open(test_dir / filepath, "rb") as f:
         data = {
             "name": "john Phillips",
             "age": 11,
             "email": "jphillips@gmail.com",
             "username": "jphill111",
             "password": "password",
-            "profile_picture": f,
+            "profile_picture": f.read(),
             "registers": [{"name": "my course"}],
         }
         schemas.StudentSchema().load(data=data)
