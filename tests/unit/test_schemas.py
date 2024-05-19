@@ -7,6 +7,10 @@ import schemas
 
 
 def test_student_schema_valid_data():
+    """
+    This tests that the marshmallow schema for students checks the input data fields are correctly structured
+    and ensures that the result of schema validation equals the input data passed for validation (No side-effects).
+    """
     data = {
         "name": "john Phillips",
         "age": 11,
@@ -15,7 +19,7 @@ def test_student_schema_valid_data():
         "password": "password",
         "registers": [{"name": "my course"}],
     }
-    schemas.StudentSchema().load(data=data)
+    assert schemas.StudentSchema().load(data=data) == data
 
 
 @pytest.mark.parametrize(
@@ -121,6 +125,12 @@ def test_student_schema_raises_validation_errors(data, bad_field):
 
 
 def test_student_schema_raises_nested_validation_errors():
+    """
+    This test extends the validity test above, with the extension that we are checking that the registers field is
+    correctly structured. Note that student schema does not define the structure of the nested registered schema, but
+    it is clear that the registers section of this request is not in the correct format (we are expecting an integer in
+    as the register name and a string "invalid name" is passed)
+    """
     data = {
         "name": "john Phillips",
         "age": 11,
@@ -143,6 +153,11 @@ def test_student_schema_raises_nested_validation_errors():
     ],
 )
 def test_student_schema_valid_file(filepath):
+    """This test checks that we can upload filepaths to the student schema.
+
+    Given that profile pictures have not been implemented correctly in the student schema routes,
+    it is unclear that this test is validating anything...
+    """
     test_dir = Path(__file__).parent
     with open(test_dir / filepath, "rb") as f:
         data = {
@@ -154,4 +169,4 @@ def test_student_schema_valid_file(filepath):
             "profile_picture": f.read(),
             "registers": [{"name": "my course"}],
         }
-        schemas.StudentSchema().load(data=data)
+        assert schemas.StudentSchema().load(data=data) == data

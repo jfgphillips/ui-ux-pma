@@ -8,6 +8,7 @@ from models import StudentModel
 
 @pytest.fixture(scope="function")
 def stub_tutor_data(app):
+    """This is a fixture used to populate the testing database with some dummy student data"""
     student_data = {
         "name": "john Phillips",
         "age": 11,

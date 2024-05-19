@@ -11,6 +11,19 @@ from models import CourseModel, CourseRegisterModel, StudentModel, TutorModel
 
 @pytest.fixture(scope="function")
 def app():
+    """
+    This is a fixture implemented in conftest to setup a fake postgres database for testing purposes
+    It is generally good practice to set up fake databases for testing pipelines that have sufficient setup/teardown
+    flows. The fixture works as follows
+    1. use the testing postgresql library to setup a temporary postgres db instance + connection
+    2. provide this db url during flask app initialisation
+    3. set the app config to testing mode
+    4. within the app_context manager initialise sqlachemy db object (containing all model (table) schemas) to create
+       all tables
+    5. yield the app object during testing scope
+    6. tear down the app object by dropping all the tables
+    7. close postgres connection
+    """
     postgresql = testing.postgresql.Postgresql()
     app = create_app(postgresql.url())
     app.config.update(
@@ -34,11 +47,13 @@ def app():
 
 @pytest.fixture(scope="function")
 def client(app):
+    """A fixture used to yield a flask test client"""
     return app.test_client()
 
 
 @pytest.fixture(scope="function")
 def admin_authed_header(app):
+    """A fixture used to generate an admin authed header for accessing jwt enabled endpoints as the admin user"""
     with app.app_context():
         access_token = create_access_token("admin_user", additional_claims={"user_type": "admin"})
         headers = {"Authorization": "Bearer {}".format(access_token)}
@@ -50,6 +65,11 @@ StubData = namedtuple("StubData", "course register student tutor")
 
 @pytest.fixture(scope="function")
 def populate_db_with_student_and_tutor_data(app, client):
+    """
+    A fixture used to populate the database with student and tutor stub data; stored in conftest for use across the
+    testing estate
+    (currently required for unit.resources.test_auth)
+    """
     student_data = {
         "name": "john Phillips",
         "age": 11,
@@ -78,6 +98,11 @@ def populate_db_with_student_and_tutor_data(app, client):
 
 @pytest.fixture(scope="function")
 def populate_db_with_stub_data(app):
+    """
+    Use fixtures to populate the database with some stub data; stored in conftest for use across the entire testing
+    estate
+    (currently required for tests in the unit.resources.test_course_register)
+    """
     course_data = {"name": "English", "subject_type": "11+ exam", "id": 1, "summary": None, "test_providers": None}
     student_data = {
         "name": "john Phillips",
