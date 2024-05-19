@@ -1,11 +1,12 @@
+from collections import namedtuple
+
 import pytest
+import testing.postgresql
 from flask_jwt_extended import create_access_token
 
 from app import create_app
-import testing.postgresql
-from sqlalchemy import create_engine
-
 from db import db
+from models import CourseModel, CourseRegisterModel, StudentModel, TutorModel
 
 
 @pytest.fixture(scope="function")
@@ -44,13 +45,6 @@ def admin_authed_header(app):
         return headers
 
 
-from collections import namedtuple
-
-import pytest
-
-from db import db
-from models import StudentModel, TutorModel, CourseModel, CourseRegisterModel
-
 StubData = namedtuple("StubData", "course register student tutor")
 
 
@@ -74,8 +68,8 @@ def populate_db_with_student_and_tutor_data(app, client):
         "summary": "I am a tutor",
         "profile_picture": None,
     }
-    student = StudentModel(**student_data)
-    tutor = TutorModel(**tutor_data)
+    StudentModel(**student_data)
+    TutorModel(**tutor_data)
     client.post("/students", data=student_data)
     client.post("/tutors", data=tutor_data)
 

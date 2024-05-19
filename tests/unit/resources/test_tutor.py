@@ -1,9 +1,9 @@
 import pytest
 from sqlalchemy.exc import IntegrityError
+from tests.client_headers import get_tutor_authed_header
 
 from db import db
 from models import TutorModel
-from tests.client_headers import get_tutor_authed_header
 
 
 @pytest.fixture(scope="function")

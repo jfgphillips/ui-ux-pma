@@ -1,16 +1,12 @@
 from dataclasses import dataclass
 
-import requests
-
-from flask import render_template, request, url_for, redirect, flash, make_response
+from flask import make_response, redirect, url_for
 from flask.views import MethodView
 from flask_jwt_extended import (
     create_access_token,
+    create_refresh_token,
     get_jwt,
     jwt_required,
-    create_refresh_token,
-    get_jwt_identity,
-    verify_jwt_in_request,
     set_access_cookies,
     set_refresh_cookies,
     unset_jwt_cookies,

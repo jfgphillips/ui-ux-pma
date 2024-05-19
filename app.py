@@ -1,26 +1,24 @@
 import os
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timedelta, timezone
 
 from dotenv import load_dotenv
-
-from flask import Flask, jsonify, url_for, redirect
-from flask_smorest import Api
+from flask import Flask, jsonify
 from flask_jwt_extended import JWTManager, get_jwt, set_access_cookies
 from flask_migrate import Migrate
+from flask_smorest import Api
 
 from blocklist import BLOCKLIST
+from constants import JWT_SECRET_KEY, UPLOAD_FOLDER
 from db import db
 from resources import (
-    CourseRegisterBlueprint,
+    AuthBlueprint,
     CourseBlueprint,
+    CourseRegisterBlueprint,
+    RoutesBlueprint,
     StudentBlueprint,
     TutorBlueprint,
-    AuthBlueprint,
-    RoutesBlueprint,
 )
-
-from constants import JWT_SECRET_KEY, UPLOAD_FOLDER
-from resources.auth import TokenRefresh, TokenManager
+from resources.auth import TokenManager, TokenRefresh
 
 
 def create_app(db_url=None):
@@ -38,7 +36,7 @@ def create_app(db_url=None):
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
     db.init_app(app)
-    migrate = Migrate(app, db)
+    Migrate(app, db)
     api = Api(app)
 
     app.config["JWT_SECRET_KEY"] = JWT_SECRET_KEY

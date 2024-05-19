@@ -1,7 +1,6 @@
 from collections import namedtuple
 
 import pytest
-from sqlalchemy.exc import IntegrityError
 
 from db import db
 from models import CourseModel, CourseRegisterModel, StudentModel, TutorModel

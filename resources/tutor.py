@@ -1,12 +1,12 @@
 from flask.views import MethodView
+from flask_jwt_extended import get_jwt, jwt_required
 from flask_smorest import Blueprint, abort
 from passlib.handlers.pbkdf2 import pbkdf2_sha256
-from sqlalchemy.exc import SQLAlchemyError, IntegrityError
-from flask_jwt_extended import create_access_token, jwt_required, get_jwt
+from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 
 from db import db
 from models import TutorModel
-from schemas import TutorSchema, TutorUpdateSchema, LoginSchema
+from schemas import TutorSchema, TutorUpdateSchema
 
 blp = Blueprint("Tutors", __name__, description="Operations on Tutors")
 

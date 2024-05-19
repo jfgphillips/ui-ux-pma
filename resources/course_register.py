@@ -1,11 +1,11 @@
 from flask.views import MethodView
-from flask_smorest import Blueprint, abort
-from sqlalchemy.exc import SQLAlchemyError, IntegrityError
 from flask_jwt_extended import jwt_required
+from flask_smorest import Blueprint, abort
+from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 
 from db import db
-from models import CourseRegisterModel, CourseModel, StudentModel, TutorModel
-from schemas import CourseRegisterSchema, CourseRegisterAndStudentSchema, CourseRegisterAndTutorSchema
+from models import CourseModel, CourseRegisterModel, StudentModel, TutorModel
+from schemas import CourseRegisterAndStudentSchema, CourseRegisterAndTutorSchema, CourseRegisterSchema
 
 blp = Blueprint("CourseRegisters", "course_registers", description="Operations on course registers")
 

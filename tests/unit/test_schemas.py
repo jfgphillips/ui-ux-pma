@@ -1,7 +1,8 @@
 import os
+
 import pytest
 from marshmallow import ValidationError
-from dotenv import load_dotenv
+
 import schemas
 
 
@@ -111,7 +112,6 @@ def test_student_schema_raises_validation_errors(data, bad_field):
     StudentSchema with incorrect data.
     :param data:
     :param bad_field:
-    :return:
     """
     try:
         schemas.StudentSchema().load(data=data)

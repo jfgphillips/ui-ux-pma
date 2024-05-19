@@ -3,17 +3,15 @@ import logging
 from typing import Optional
 
 import requests
-from flask import request, url_for, redirect, render_template, session
-from flask.views import MethodView
-from flask_smorest import Blueprint, abort
-from flask_jwt_extended import jwt_required, verify_jwt_in_request, get_jwt
+from flask import redirect, render_template, request, url_for
+from flask_jwt_extended import get_jwt, jwt_required, verify_jwt_in_request
+from flask_smorest import Blueprint
 
 from resources.auth import TokenManager
 from resources.course import CourseList
-from resources.course_register import CourseRegisterList, CourseRegister, RegistersInStudent, RegistersInTutor
+from resources.course_register import CourseRegisterList, RegistersInStudent, RegistersInTutor
 from resources.student import Student, StudentList
 from resources.tutor import Tutor, TutorList
-from resources.utils import File
 
 blp = Blueprint("Routes", __name__, description="html operations")
 
@@ -159,11 +157,13 @@ def handle_signup():
     """Handles the response from a register form and actions the appropriate endpoints, if the signup responds with a
     success then the user is redirected to the login page, otherwise the user is redirected to signup again."""
     response = None
-    file_upload = None
+
     user_type = request.form["user_type"]
     print(request.files)
     payload = _convert_form_to_json_payload(request.form, ["user_type", "profile_picture"])
-    file_payload = {"profile_picture": request.files, "user_type": user_type}
+    # FIXME: file upload no not currently working
+    # file_upload = None
+    # file_payload = {"profile_picture": request.files, "user_type": user_type}
 
     if user_type == "student":
         response = requests.post(f"{request.url_root}{url_for('Students.StudentList')}", data=payload)
@@ -224,7 +224,8 @@ def my_people():
     """
     response = None
     type = None
-    register_ids = []
+    # FIXME: register ids not currently used
+    # register_ids = []
     jwt_payload = get_jwt()
     uid = jwt_payload["sub"]
     if jwt_payload["user_type"] == "student":
@@ -264,7 +265,8 @@ def my_courses():
     """
     response = None
     type = "My Courses"
-    register_ids = []
+    # FIXME: register ids not currently used
+    # register_ids = []
     jwt_payload = get_jwt()
     uid = jwt_payload["sub"]
     if jwt_payload["user_type"] == "student":
