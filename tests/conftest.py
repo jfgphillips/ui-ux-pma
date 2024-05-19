@@ -45,7 +45,6 @@ def admin_authed_header(app):
         return headers
 
 
-
 StubData = namedtuple("StubData", "course register student tutor")
 
 
